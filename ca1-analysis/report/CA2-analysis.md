@@ -1,3 +1,27 @@
+# CA2: Collaborative Object-Oriented Design
+## Riverside Community Partnership Equipment Lending Service
+
+## 1. Scenario Selection and Agreed Baseline
+### 1.1 Scenario Comparison and Selection
+
+| Project | Scope | Behavioural richness | OO potential | Sliceability | Testability | Comparability | Total score |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Community Equipment Loan Service | 4 | 5 | 5 | 4 | 4 | 5 | 4.5 |
+| Farm Machinery Cooperative Service | 4 | 3 | 4 | 5 | 3 | 4 | 3.8 |
+| Kerry Community Sports Facility Service | 3 | 5 | 5 | 4 | 4 | 5 | 4.3 |
+| Harbour Equipment and Berth Service | 4 | 5 | 4 | 4 | 4 | 4 | 4.2 |
+
+
+Our team analysed each teammate's scenario and report and selected
+Community Equipment Loan Service based on the comparison of scope,
+behavioural richness, OO potential, sliceability, testability and comparability.
+
+### 1.2 Lecturer Approval and Expansion
+The lecturer approved the Community Equipment Loan Service scenario
+for CA2. No scenario-specific expansion was provided.
+
+### 1.3 Reconciliation and Agreed Baseline Links
+
 ## Product Goal and Product Backlog
 
 ### Product Goal
@@ -13,8 +37,7 @@ I want my equipment request to be assessed and receive
 clear confirmation of the decision and any approved loan details,
 so that I can plan my community activity.
 
-### Related Use Cases
-### 6.2 Detailed Use Case: UC-01 Record Loan Request
+ ###Detailed Use Case: UC-01 Record Loan Request
 
 | Field | Content |
 |---|---|
