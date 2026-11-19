@@ -1,0 +1,198 @@
+
+@startuml
+top to bottom direction
+
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+
+abstract class Person {
+  - personId: int
+  - name: String
+  - contactDetails: String
+}
+
+class Borrower {
+  - borrowerCategory: String
+}
+
+class StaffMember {
+  - role: String
+}
+
+Person <|-- Borrower
+Person <|-- StaffMember
+
+class LoanRequest {
+  - requestId: int
+  - receivedDate: LocalDate
+  - collectionDate: LocalDate
+  - returnDate: LocalDate
+  - status: RequestStatus
+  - activityDescription: String
+  - namedCollector: String
+  + changeStatus(status: RequestStatus): void
+}
+
+class RequestedEquipmentLine {
+  - lineId: int
+  - requestedQuantity: int
+}
+
+class EquipmentType {
+  - equipmentTypeId: int
+  - name: String
+  - requiresSafetyInspection: boolean
+  - requiresHandlingInstructions: boolean
+  - requiresCoordinatorApproval: boolean
+}
+
+class EquipmentUnit {
+  - unitId: int
+  - condition: EquipmentCondition
+  - availabilityStatus: AvailabilityStatus
+  - fundingSource: String
+  - safetyInspectionExpiryDate: LocalDate
+  + isAvailable(): boolean
+  + updateCondition(condition: EquipmentCondition): void
+}
+
+class EquipmentComponent {
+  - componentId: int
+  - name: String
+  - condition: EquipmentCondition
+  - componentStatus: String
+}
+
+class CollectionRecord {
+  - collectionId: int
+  - collectionDate: LocalDate
+  - actualCollectorName: String
+}
+
+class ReturnInspectionRecord {
+  - inspectionId: int
+  - returnDate: LocalDate
+  - cleanlinessResult: String
+  - safetyResult: String
+  - maintenanceNeed: boolean
+}
+
+class DamageRecord {
+  - damageId: int
+  - identifiedDate: LocalDate
+  - issueDescription: String
+  - usableAfterDamage: boolean
+  - repairRequired: boolean
+}
+
+enum RequestStatus {
+  Pending
+  Approved
+  Rejected
+  Collected
+  Returned
+}
+
+enum AvailabilityStatus {
+  Available
+  Reserved
+  OnLoan
+  UnderMaintenance
+}
+
+enum EquipmentCondition {
+  Good
+  Fair
+  Damaged
+}
+
+
+Borrower "1" -- "0..*" LoanRequest : makes
+StaffMember "0..*" -- "1..*" LoanRequest : manages
+
+LoanRequest "1" *-- "1..*" RequestedEquipmentLine : contains
+RequestedEquipmentLine "0..*" --> "1" EquipmentType : requests
+
+EquipmentType "1" -- "0..*" EquipmentUnit : categorises
+EquipmentUnit "1" *-- "0..*" EquipmentComponent : consists of
+
+LoanRequest "1" -- "0..1" CollectionRecord : fulfilled by
+StaffMember "1" -- "0..*" CollectionRecord : records
+CollectionRecord "0..*" -- "1..*" EquipmentUnit : issues
+
+CollectionRecord "1" -- "0..1" ReturnInspectionRecord : followed by
+StaffMember "1" -- "0..*" ReturnInspectionRecord : records
+ReturnInspectionRecord "0..*" -- "1..*" EquipmentUnit : inspects
+
+ReturnInspectionRecord "1" -- "0..*" DamageRecord : identifies
+DamageRecord "0..*" -- "1" EquipmentUnit : affects
+
+
+class LoanRequestService {
+  + submitRequest(borrowerId: int): LoanRequest
+  + approveRequest(requestId: int): void
+  + rejectRequest(requestId: int): void
+}
+
+class EquipmentService {
+  + checkAvailability(typeId: int): List<EquipmentUnit>
+  + getEquipmentDetails(unitId: int): EquipmentUnit
+}
+
+class CollectionService {
+  + recordCollection(requestId: int): CollectionRecord
+}
+
+class ReturnInspectionService {
+  + inspectReturn(collectionId: int): ReturnInspectionRecord
+  + recordDamage(unitId: int): DamageRecord
+}
+
+
+interface LoanRequestRepository {
+  + findById(id: int): LoanRequest
+  + save(request: LoanRequest): void
+  + update(request: LoanRequest): void
+}
+
+interface EquipmentRepository {
+  + findById(id: int): EquipmentUnit
+  + findAvailable(typeId: int): List<EquipmentUnit>
+  + update(unit: EquipmentUnit): void
+}
+
+interface CollectionRepository {
+  + save(record: CollectionRecord): void
+}
+
+interface ReturnInspectionRepository {
+  + save(record: ReturnInspectionRecord): void
+  + saveDamage(record: DamageRecord): void
+}
+
+
+class LoanRequestRepositoryImpl
+class EquipmentRepositoryImpl
+class CollectionRepositoryImpl
+class ReturnInspectionRepositoryImpl
+
+LoanRequestRepositoryImpl ..|> LoanRequestRepository
+EquipmentRepositoryImpl ..|> EquipmentRepository
+CollectionRepositoryImpl ..|> CollectionRepository
+ReturnInspectionRepositoryImpl ..|> ReturnInspectionRepository
+
+
+LoanRequestService ..> LoanRequestRepository
+LoanRequestService ..> EquipmentRepository
+
+EquipmentService ..> EquipmentRepository
+
+CollectionService ..> LoanRequestRepository
+CollectionService ..> EquipmentRepository
+CollectionService ..> CollectionRepository
+
+ReturnInspectionService ..> EquipmentRepository
+ReturnInspectionService ..> ReturnInspectionRepository
+
+@enduml
