@@ -1,0 +1,30 @@
+@startuml
+title SSD: UC-01 Record Loan Request
+hide footbox
+actor "Office Staff" as Staff
+participant ":Equipment Lending Service" as System
+
+Staff -> System : startLoanRequest()
+Staff -> System : recordBorrower(name, borrowerCategory, contactDetails)
+
+loop for each requested equipment type
+  Staff -> System : addRequestedEquipment(equipmentType, quantity)
+end
+
+Staff -> System : setRequestDates(collectionDate, returnDate)
+Staff -> System : saveLoanRequest()
+
+note over System
+  Nothing is recorded until saveLoanRequest().
+  No approval and no equipment reservation
+  at this stage (UC-01 postcondition).
+end note
+
+alt required information is complete (Success Flow)
+  System --> Staff : request recorded, available for assessment
+else required information is missing (A2, NFR-02)
+  System --> Staff : request recorded as pending further information
+else request cannot be saved (E1)
+  note over System : save did not happen,\nno loan request recorded
+end
+@enduml
