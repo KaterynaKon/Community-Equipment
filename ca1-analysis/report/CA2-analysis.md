@@ -79,3 +79,5 @@ ca1-analysis/features/equipment-lending.feature
 **SC-02: Record a request with missing required information**
 
 #### System Sequence Diagram
+
+https://github.com/KaterynaKon/Community-Equipment/blob/main/ca1-analysis/diagrams/ssd/png_version_ssd_uc1.png
