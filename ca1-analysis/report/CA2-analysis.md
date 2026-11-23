@@ -211,6 +211,16 @@ https://github.com/KaterynaKon/Community-Equipment/blob/main/ca1-analysis/diagra
 
 ## 7. Traceability Matrix
 
+| Requirement | User Story | Use Case | Gherkin | SSD operation | Operation Contract | CRC / GRASP | DCD element | Interaction (5.1) |
+|---|---|---|---|---|---|---|---|---|
+| FR-01 | US-01 | UC-01 | SC-01 | startLoanRequest() | OC-UC01-01 | TBD | TBD | TBD |
+| FR-01 | US-01 | UC-01 | SC-01 | recordBorrower() | OC-UC01-02 | TBD | TBD | TBD |
+| FR-01 | US-01 | UC-01 | SC-01 | addRequestedEquipment() | OC-UC01-03 | TBD | TBD | TBD |
+| FR-01 | US-01 | UC-01 | SC-01 | setRequestDates() | OC-UC01-04 | TBD | TBD | TBD |
+| FR-01 | US-01 | UC-01 | SC-01 | saveLoanRequest() | OC-UC01-05 | TBD | TBD | TBD |
+| FR-01, NFR-02 | US-01 | UC-01 (A2) | SC-02 | saveLoanRequest() | OC-UC01-05 | TBD | TBD | TBD |
+| FR-01 | US-01 | UC-01 (E1) | SC-04 | saveLoanRequest() | OC-UC01-05 | TBD | TBD | TBD |
+
 ## 8. Design Evaluation
 ### 8.1 Cohesion, Coupling, Controllers and Object Validity
 ### 8.2 Assumptions, Risks, Rejected Alternatives and Limitations
