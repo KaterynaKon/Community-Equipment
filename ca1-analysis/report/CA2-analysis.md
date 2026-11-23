@@ -21,6 +21,9 @@ The lecturer approved the Community Equipment Loan Service scenario
 for CA2. No scenario-specific expansion was provided.
 
 ### 1.3 Reconciliation and Agreed Baseline Links
+The multiplicity at the LoanRequest end of the StaffMember–LoanRequest
+association was changed from 1..* to 0..*, allowing a staff member
+to have no managed requests.
 
 ## 2. Product Goal, Backlog and Selected Design Scope
 
