@@ -197,7 +197,11 @@ The main principles considered in this design are:
 |---|---|---|---|
 | LoanRequestController | Receives request information and knows available request operations. | Handles request submissions and delegates operations. | LoanRequestService |
 |LoanRequestService | Knows request workflow and required information. | Coordinates request creation, validation and status changes. |LoanRequest, Borrower, LoanRequestRepository |
-| EquipmentService | Knows equipment availability-checking operations. | Coordinates availability and extension-conflict checks. | EquipmentRepository, EquipmentUnit, LoanRequestRepository |
+| LoanRequest | Knows request details, including received date, collection date, return date and status. Knows the borrower associated with the request and the requested equipment lines. | Checks whether the required information has been recorded. Creates and maintains its requested equipment lines. Maintains the request status. | Borrower, RequestedEquipmentLine, LoanRequestService |
+| RequestedEquipmentLine | Knows the requested equipment type and requested quantity. | Provides requested equipment details for the loan request and subsequent availability checks. | LoanRequest, EquipmentType |
+| LoanRequestRepository | Defines operations for saving, retrieving and updating loan requests. | Provides an abstraction for accessing loan request data without exposing database implementation details. | LoanRequest, LoanRequestService, LoanRequestRepositoryImpl |
+| LoanRequestRepositoryImpl | Knows how loan request and equipment line data are stored and retrieved from the database. | Implements repository operations. Executes database queries to save, retrieve and update loan requests and their associated equipment lines. | LoanRequestRepository, LoanRequest, RequestedEquipmentLine |
+
 
 ### 4.2 GRASP Decision Records
 
@@ -207,7 +211,7 @@ The main principles considered in this design are:
 
 | Field | Content |
 |---|---|
-| Problem | A class must receive a new loan-request submission from Office Staff and coordinate the process of recording the request, including handling incomplete information. |
+| Problem | A class must receive a new loan request submission from Staff Member and coordinate the process of recording the request, including handling incomplete information. |
 | Candidate assignments | LoanRequestController, LoanRequestService, LoanRequest |
 | Selected assignment | **LoanRequestController** receives the request from the user interface and delegates the operation to **LoanRequestService**. **LoanRequestService** coordinates request creation, checks required information and ensures the appropriate request status is recorded. |
 | GRASP principle | **Controller:** The controller handles the system event and delegates business operations. **High Cohesion:** The controller remains focused on receiving requests, while the service handles the request workflow. |
@@ -222,12 +226,12 @@ The main principles considered in this design are:
 |---|---|
 | Problem | The system must create a new loan request containing borrower information, requested collection and return dates, and one or more requested equipment lines. Each equipment line must identify an equipment type and its requested quantity. |
 | Candidate assignments | LoanRequestController, LoanRequestService, LoanRequest, RequestedEquipmentLine |
-| Selected assignment | LoanRequestController receives the request information from Office Staff and delegates the operation to **LoanRequestService**. **LoanRequestService** coordinates the creation of the new **LoanRequest** and associates it with the relevant **Borrower**. **LoanRequest** creates and maintains its **RequestedEquipmentLine** objects because they form part of the request. Each **RequestedEquipmentLine** stores the requested equipment type and quantity. |
+| Selected assignment | LoanRequestController receives the request information from Staff Member and delegates the operation to **LoanRequestService**. **LoanRequestService** coordinates the creation of the new **LoanRequest** and associates it with the relevant **Borrower**. **LoanRequest** creates and maintains its **RequestedEquipmentLine** objects because they form part of the request. Each **RequestedEquipmentLine** stores the requested equipment type and quantity. |
 | GRASP principle | **Controller:** **LoanRequestController** handles the system event of submitting a new loan request and delegates the operation. **Creator:** **LoanRequest** is responsible for creating its **RequestedEquipmentLine** objects because it contains and maintains them. **High Cohesion:** The service coordinates request creation, while the request maintains its own equipment lines. |
 | Rejected alternative | Assigning **LoanRequestController** the responsibility for creating and managing all equipment lines was rejected because it would mix interface handling with domain-object creation and request-management logic. |
 | Consequences | Request creation is separated from interface handling, and equipment lines are maintained by the loan request that contains them. This supports requests containing multiple equipment types and quantities. However, it introduces a relationship between **LoanRequest** and **RequestedEquipmentLine**, and the service must coordinate the creation and persistence of the complete request. |
 
-## Decision 3: Storing and retrieving loan-request information
+## Decision 3: Storing and retrieving loan request information
 
 **Selected classes:** LoanRequestRepository, LoanRequestRepositoryImpl, LoanRequestService
 
@@ -242,7 +246,7 @@ The main principles considered in this design are:
 
 ## Decision 4: Checking request completeness
 
-**Selected classes:** `LoanRequest`, `LoanRequestService`
+**Selected classes:** LoanRequest, LoanRequestService
 
 | Field | Content |
 |---|---|
