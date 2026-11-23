@@ -80,6 +80,7 @@ ca1-analysis/features/equipment-lending.feature
 **SC-01: Record a complete loan request**
 
 **SC-02: Record a request with missing required information**
+**SC-04: Loan request cannot be saved**
 
 #### System Sequence Diagram
 
@@ -88,7 +89,7 @@ https://github.com/KaterynaKon/Community-Equipment/blob/main/ca1-analysis/diagra
 #### Operation Contracts
 
 Related use case: UC-01  
-Related requirements: FR-01; NFR-02  
+elated scenarios: SC-01; SC-02; SC-04
 Related scenarios: SC-01; SC-02
 
 ##### Shared Preconditions and Design Assumption
@@ -163,7 +164,7 @@ Related scenarios: SC-01; SC-02
 - The request's status was set to pending further information.
 - The request is not available for assessment.
 
-**Controlled failure — E1:**
+**Controlled failure — E1 / SC-04:**
 - No LoanRequest is recorded.
 - Successful recording is not reported.
 - Staff follow the agreed fallback procedure.
