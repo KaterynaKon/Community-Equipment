@@ -46,7 +46,7 @@ I want my equipment request to be assessed and receive
 clear confirmation of the decision and any approved loan details,
 so that I can plan my community activity.
 
- ####Selected Use Cases
+ #### Selected Use Cases
 
 | Use Case | Value | Related Requirements / Rules | Dependencies | Selection Rationale |
 |---|---|---|---|---|
@@ -205,7 +205,7 @@ The main principles considered in this design are:
 
 ### 4.2 GRASP Decision Records
 
-## Decision 1: Receiving and coordinating loan requests
+#### Decision 1: Receiving and coordinating loan requests
 
 **Selected classes:** LoanRequestController, LoanRequestService
 
@@ -213,12 +213,12 @@ The main principles considered in this design are:
 |---|---|
 | Problem | A class must receive a new loan request submission from Staff Member and coordinate the process of recording the request, including handling incomplete information. |
 | Candidate assignments | LoanRequestController, LoanRequestService, LoanRequest |
-| Selected assignment | **LoanRequestController** receives the request from the user interface and delegates the operation to **LoanRequestService**. **LoanRequestService** coordinates request creation, checks required information and ensures the appropriate request status is recorded. |
+| Selected assignment | **LoanRequestController** receives the request from the user interface and delegates the operation to **LoanRequestService**. **LoanRequestService** coordinates request creation, asks LoanRequest to check completeness and ensures the appropriate request status is recorded. |
 | GRASP principle | **Controller:** The controller handles the system event and delegates business operations. **High Cohesion:** The controller remains focused on receiving requests, while the service handles the request workflow. |
 | Rejected alternative | Assigning the entire process to **LoanRequestController** was rejected because it would combine interface handling, validation and business logic in one class. |
 | Consequences | Separates interface communication from business logic and makes the request workflow easier to test and maintain. However, it introduces an additional service class and dependency between the controller and service. |
 
-## Decision 2: Creating the loan request and equipment lines
+#### Decision 2: Creating the loan request and equipment lines
 
 **Selected classes:** LoanRequestController, LoanRequestService, LoanRequest, RequestedEquipmentLine
 
@@ -231,7 +231,7 @@ The main principles considered in this design are:
 | Rejected alternative | Assigning **LoanRequestController** the responsibility for creating and managing all equipment lines was rejected because it would mix interface handling with domain-object creation and request-management logic. |
 | Consequences | Request creation is separated from interface handling, and equipment lines are maintained by the loan request that contains them. This supports requests containing multiple equipment types and quantities. However, it introduces a relationship between **LoanRequest** and **RequestedEquipmentLine**, and the service must coordinate the creation and persistence of the complete request. |
 
-## Decision 3: Storing and retrieving loan request information
+#### Decision 3: Storing and retrieving loan request information
 
 **Selected classes:** LoanRequestRepository, LoanRequestRepositoryImpl, LoanRequestService
 
@@ -244,7 +244,7 @@ The main principles considered in this design are:
 | Rejected alternative | Allowing **LoanRequestService** to execute database queries directly was rejected because it would tightly couple business logic to the database technology. |
 | Consequences | Database access is separated from business logic, making the system easier to test and maintain. The database implementation could be changed without significantly modifying the service. However, additional repository interfaces and implementations are required. |
 
-## Decision 4: Checking request completeness
+#### Decision 4: Checking request completeness
 
 **Selected classes:** LoanRequest, LoanRequestService
 
