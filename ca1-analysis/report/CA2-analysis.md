@@ -176,6 +176,23 @@ Related scenarios: SC-01; SC-02
 
 
 ## 4. Responsibilities and GRASP
+The **Class-Responsibility-Collaborator (CRC)** model identifies the responsibilities assigned to each class in the Community Equipment Loan Service (CELS). It describes what information each class knows, what actions it performs and which other classes it collaborates with.
+
+Responsibilities are divided into:
+- **Knowing responsibilities:** Information that a class maintains or needs to know to perform its work.
+- **Doing responsibilities:** Actions or operations that a class performs.
+- **Collaborators**: Other classes that help it fulfil its responsibilities.
+
+The **GRASP (General Responsibility Assignment Software Patterns)** principles are used to justify how responsibilities are distributed throughout the system.
+The main principles considered in this design are:
+- **Controller:** Assigns responsibility for handling system events to an appropriate controller.
+- **Information Expert:** Assigns a responsibility to the class that has the information needed to fulfil it.
+- **Creator:** Assigns responsibility for creating an object to a class that contains, aggregates, records or closely uses it.
+- **High Cohesion:** Keeps responsibilities within a class focused and related.
+- **Low Coupling:** Minimises unnecessary dependencies between classes.
+- **Indirection:** Introduces an intermediate class to reduce direct dependencies.
+- **Pure Fabrication:** Introduces a class for a technical responsibility that does not naturally belong to a domain entity.
+
 ### 4.1 CRC Cards
 ### 4.2 GRASP Decision Records
 
