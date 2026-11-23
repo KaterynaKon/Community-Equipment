@@ -24,6 +24,17 @@ Feature: Recording loan requests
     Then the service records the request as pending further information
     And the request cannot be assessed until the required information is recorded
 
+  # SC-04 - Related to FR-01
+  Scenario: Loan request cannot be saved
+    Given Office Staff has received a request from Local Sports Club
+    And the request includes 10 chairs
+    And the request includes a collection date of 10 November 2026
+    And the request includes a return date of 12 November 2026
+    But the service is unable to save the request
+    When Office Staff records the loan request
+    Then no loan request is recorded
+    And Office Staff follows the fallback process
+
 Feature: Restricted volunteer access
     In order to protect borrower privacy
     As Riverside Community Partnership
