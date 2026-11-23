@@ -51,7 +51,7 @@ so that I can plan my community activity.
 | Use Case | Value | Related Requirements / Rules | Dependencies | Selection Rationale |
 |---|---|---|---|---|
 | UC-01: Record Loan Request | Captures request information so staff can assess the borrowing request. | FR-01; NFR-02 | Staff have received a request by telephone or email and are authorised to record it. | Establishes the starting point of the lending process and supports multiple equipment lines and the alternative of missing required information. |
-| UC-02: Assess Loan Request | Helps staff make informed lending decisions. | FR-02; FR-03; BR-01 | Requires a recorded loan request (UC-01). | Includes availability checks, approval or refusal, and reduced-quantity alternatives, providing meaningful behaviour for OO design. |
+
 
 ## 3. Behavioural Design
 
