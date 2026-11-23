@@ -20,9 +20,9 @@ note over System
   at this stage (UC-01 postcondition).
 end note
 
-alt required information is complete (Success Flow)
+alt save succeeds and required information is complete (Success Flow)
   System --> Staff : request recorded, available for assessment
-else required information is missing (A2, NFR-02)
+else save succeeds and required information is missing (A2, NFR-02)
   System --> Staff : request recorded as pending further information
 else request cannot be saved (E1)
   note over System : save did not happen,\nno loan request recorded
