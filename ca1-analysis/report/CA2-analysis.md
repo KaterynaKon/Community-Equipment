@@ -194,6 +194,14 @@ The main principles considered in this design are:
 - **Pure Fabrication:** Introduces a class for a technical responsibility that does not naturally belong to a domain entity.
 
 ### 4.1 CRC Cards
+| Class | Knowing responsibilities | Doing responsibilities | Collaborators |
+|---|---|---|---|
+| LoanRequestController | Receives request information and knows available request operations. | Handles request submissions and delegates operations. | LoanRequestService |
+|LoanRequestService | Knows request workflow and required information. | Coordinates request creation, validation and status changes. |LoanRequest, Borrower, LoanRequestRepository |
+| EquipmentService | Knows equipment availability-checking operations. | Coordinates availability and extension-conflict checks. | EquipmentRepository, EquipmentUnit, LoanRequestRepository |
+| CollectionService | Knows collection operations. | Records equipment collection. | CollectionRecord, LoanRequestRepository, EquipmentRepository |
+| ReturnInspectionService | Knows return-inspection operations. | Records return inspections and coordinates damage recording. | ReturnInspectionRecord, DamageRecord, EquipmentRepository |
+| ReportService | Knows the information required for operational and funder reports. | Generates reports using relevant system information. | Relevant repositories |
 ### 4.2 GRASP Decision Records
 
 
