@@ -201,7 +201,7 @@ The main principles considered in this design are:
 | RequestedEquipmentLine | Knows the requested equipment type and requested quantity. | Provides requested equipment details for the loan request and subsequent availability checks. | LoanRequest, EquipmentType |
 | LoanRequestRepository | Defines operations for saving, retrieving and updating loan requests. | Provides an abstraction for accessing loan request data without exposing database implementation details. | LoanRequest, LoanRequestService, LoanRequestRepositoryImpl |
 | LoanRequestRepositoryImpl | Knows how loan request and equipment line data are stored and retrieved from the database. | Implements repository operations. Executes database queries to save, retrieve and update loan requests and their associated equipment lines. | LoanRequestRepository, LoanRequest, RequestedEquipmentLine |
-
+| BorrowerRepository | Defines operations for finding and saving borrower information. | Provides an abstraction for identifying existing borrowers and saving new borrower records. | Borrower, LoanRequestService, BorrowerRepositoryImpl |
 
 ### 4.2 GRASP Decision Records
 
