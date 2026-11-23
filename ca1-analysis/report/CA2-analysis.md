@@ -70,17 +70,16 @@ so that I can plan my community activity.
 | Success Flow | 1. Office Staff starts recording a new loan request.<br>2. Office Staff records the borrower information.<br>3. Office Staff records the requested equipment, quantity, collection date and return date.<br>4. Office Staff saves the request.<br>5. The service records the request and makes it available for assessment. |
 | Alternative Flows | A1. The borrower is new: Office Staff records the available borrower information as part of the request.<br>A2. Required request information is missing: the request is recorded as pending further information and cannot be assessed until the missing information is recorded. |
 | Exceptions | E1. The service cannot save the request, for example because internet access is unavailable. No loan request is recorded, and staff follow an agreed fallback procedure. |
-| Postconditions | - A loan request is recorded and available for assessment.<br>- No approval or equipment reservation is assumed at this stage. |
+| Postconditions | - After successful recording, a complete request is available for assessment.<br>- An incomplete request is recorded as pending further information and is not available for assessment.<br>- No approval or equipment reservation is assumed at this stage. |
 | Related Requirements / Rules | FR-01; NFR-02 |
 
 #### Linked Gherkin Scenarios
 
 ca1-analysis/features/equipment-lending.feature
 
-**SC-01: Record a complete loan request**
-
-**SC-02: Record a request with missing required information**
-**SC-04: Loan request cannot be saved**
+- **SC-01:** Record a complete loan request.
+- **SC-02:** Record a request with missing required information.
+- **SC-04:** Loan request cannot be saved.
 
 #### System Sequence Diagram
 
@@ -89,8 +88,8 @@ https://github.com/KaterynaKon/Community-Equipment/blob/main/ca1-analysis/diagra
 #### Operation Contracts
 
 Related use case: UC-01  
-elated scenarios: SC-01; SC-02; SC-04
-Related scenarios: SC-01; SC-02
+Related scenarios: SC-01; SC-02; SC-04
+
 
 ##### Shared Preconditions and Design Assumption
 
