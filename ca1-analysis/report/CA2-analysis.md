@@ -205,20 +205,20 @@ The main principles considered in this design are:
 
 ### 4.2 GRASP Decision Records
 
-#### Decision 1: Receiving and coordinating loan requests
+### Decision 1: Receiving and coordinating loan requests
 
 **Selected classes:** LoanRequestController, LoanRequestService
 
 | Field | Content |
 |---|---|
-| Problem | A class must receive a new loan request submission from Staff Member and coordinate the process of recording the request, including handling incomplete information. |
+| Problem | A class must receive a new loan request from a Staff Member and coordinate the process of recording the request, including handling incomplete information. |
 | Candidate assignments | LoanRequestController, LoanRequestService, LoanRequest |
-| Selected assignment | **LoanRequestController** receives the request from the user interface and delegates the operation to **LoanRequestService**. **LoanRequestService** coordinates request creation, asks LoanRequest to check completeness and ensures the appropriate request status is recorded. |
-| GRASP principle | **Controller:** The controller handles the system event and delegates business operations. **High Cohesion:** The controller remains focused on receiving requests, while the service handles the request workflow. |
-| Rejected alternative | Assigning the entire process to **LoanRequestController** was rejected because it would combine interface handling, validation and business logic in one class. |
-| Consequences | Separates interface communication from business logic and makes the request workflow easier to test and maintain. However, it introduces an additional service class and dependency between the controller and service. |
+| Selected assignment | **LoanRequestController** receives the loan-request information from the user interface and delegates the operation to **LoanRequestService**. **LoanRequestService** coordinates the request-recording workflow, including identifying or creating the relevant Borrower, creating the LoanRequest and checking whether the request contains the required information. |
+| GRASP principle | **Controller:** LoanRequestController handles the system event of submitting a new loan request and delegates the work to the service. **High Cohesion:** The controller focuses on handling system events, while the service coordinates the business workflow. |
+| Rejected alternative | Assigning the entire request-recording process to LoanRequestController was rejected because it would combine interface handling, borrower identification, validation and request-management logic in one class. |
+| Consequences | Separates interface communication from business logic, making the request-recording process easier to test and maintain. However, it introduces an additional service class and a dependency between the controller and service. |
 
-#### Decision 2: Creating the loan request and equipment lines
+### Decision 2: Creating the loan request and equipment lines
 
 **Selected classes:** LoanRequestController, LoanRequestService, LoanRequest, RequestedEquipmentLine
 
@@ -226,36 +226,36 @@ The main principles considered in this design are:
 |---|---|
 | Problem | The system must create a new loan request containing borrower information, requested collection and return dates, and one or more requested equipment lines. Each equipment line must identify an equipment type and its requested quantity. |
 | Candidate assignments | LoanRequestController, LoanRequestService, LoanRequest, RequestedEquipmentLine |
-| Selected assignment | LoanRequestController receives the request information from Staff Member and delegates the operation to **LoanRequestService**. **LoanRequestService** coordinates the creation of the new **LoanRequest** and associates it with the relevant **Borrower**. **LoanRequest** creates and maintains its **RequestedEquipmentLine** objects because they form part of the request. Each **RequestedEquipmentLine** stores the requested equipment type and quantity. |
-| GRASP principle | **Controller:** **LoanRequestController** handles the system event of submitting a new loan request and delegates the operation. **Creator:** **LoanRequest** is responsible for creating its **RequestedEquipmentLine** objects because it contains and maintains them. **High Cohesion:** The service coordinates request creation, while the request maintains its own equipment lines. |
-| Rejected alternative | Assigning **LoanRequestController** the responsibility for creating and managing all equipment lines was rejected because it would mix interface handling with domain-object creation and request-management logic. |
-| Consequences | Request creation is separated from interface handling, and equipment lines are maintained by the loan request that contains them. This supports requests containing multiple equipment types and quantities. However, it introduces a relationship between **LoanRequest** and **RequestedEquipmentLine**, and the service must coordinate the creation and persistence of the complete request. |
+| Selected assignment | **LoanRequestController** receives the request information and delegates the operation to **LoanRequestService**. **LoanRequestService** coordinates the creation of the LoanRequest and associates it with the relevant Borrower. **LoanRequest** creates and maintains its RequestedEquipmentLine objects using its `addRequestedEquipment()` operation because the equipment lines form part of the request. Each **RequestedEquipmentLine** stores the requested EquipmentType and quantity. |
+| GRASP principle | **Controller:** LoanRequestController handles the system event and delegates the operation. **Creator:** LoanRequest creates RequestedEquipmentLine objects because it contains and maintains them. **High Cohesion:** The service coordinates request creation, while LoanRequest manages its own equipment lines. |
+| Rejected alternative | Assigning LoanRequestController or LoanRequestService the responsibility for directly creating and managing all RequestedEquipmentLine objects was rejected because LoanRequest is the class that contains and maintains these objects. |
+| Consequences | Request creation is separated from interface handling, and equipment lines are maintained by the loan request that contains them. This supports requests containing multiple equipment types and quantities. However, LoanRequest must maintain its relationship with RequestedEquipmentLine, and the service must coordinate the creation and persistence of the complete request. |
 
-#### Decision 3: Storing and retrieving loan request information
+### Decision 3: Storing and retrieving loan request information
 
 **Selected classes:** LoanRequestRepository, LoanRequestRepositoryImpl, LoanRequestService
 
 | Field | Content |
 |---|---|
-| Problem | The system needs to save and retrieve loan requests and update their information, including decisions and changes to requested quantities or dates. |
-| Candidate assignments | LoanRequest, LoanRequestService,LoanRequestRepository, LoanRequestRepositoryImpl |
-| Selected assignment | LoanRequestRepository defines the persistence operations, while **LoanRequestRepositoryImpl** performs the actual database operations. LoanRequestService uses the repository to save, retrieve and update loan requests. |
-| GRASP principle | **Indirection:** The repository provides an intermediate layer between business logic and the database. **Low Coupling:** The service does not depend directly on database implementation details. |
-| Rejected alternative | Allowing **LoanRequestService** to execute database queries directly was rejected because it would tightly couple business logic to the database technology. |
-| Consequences | Database access is separated from business logic, making the system easier to test and maintain. The database implementation could be changed without significantly modifying the service. However, additional repository interfaces and implementations are required. |
+| Problem | The system needs to save and retrieve loan requests and update their information, including request decisions and other changes to request details. |
+| Candidate assignments | LoanRequest, LoanRequestService, LoanRequestRepository, LoanRequestRepositoryImpl |
+| Selected assignment | **LoanRequestRepository** defines the operations for saving, retrieving and updating loan requests. **LoanRequestRepositoryImpl** implements these operations and performs the actual database queries. **LoanRequestService** communicates with the LoanRequestRepository interface to store and retrieve request information without depending directly on the database implementation. |
+| GRASP principle | **Indirection:** LoanRequestRepository provides an intermediate layer between LoanRequestService and the database implementation. **Low Coupling:** LoanRequestService depends on the repository interface rather than directly depending on LoanRequestRepositoryImpl or database-specific operations. |
+| Rejected alternative | Allowing LoanRequestService to execute database queries directly was rejected because it would tightly couple business logic to database operations. Depending directly on LoanRequestRepositoryImpl was also rejected because it would make the service dependent on a specific persistence implementation. |
+| Consequences | Database access is separated from business logic, making the system easier to test and maintain. The database implementation could be changed without significantly modifying LoanRequestService, provided the repository interface remains consistent. However, additional repository interfaces and implementations are required. |
 
-#### Decision 4: Checking request completeness
+### Decision 4: Checking request completeness
 
 **Selected classes:** LoanRequest, LoanRequestService
 
 | Field | Content |
 |---|---|
 | Problem | The system must ensure that a loan request contains all information required by the agreed request policy before it can be assessed. If required information is missing, the request must be recorded as pending further information and must not proceed to assessment. |
-| Candidate assignments |LoanRequest, LoanRequestService, LoanRequestController |
-| Selected assignment | LoanRequest knows its recorded information and determines whether the required request details are present. LoanRequestService coordinates the completeness check and ensures that the appropriate request status is recorded. If information is missing, the request is assigned the pending further information status. |
-| GRASP principle | **Information Expert:** **LoanRequest** is responsible for checking its completeness because it holds the request information required for that check. **High Cohesion:** **LoanRequestService** coordinates the request workflow and status changes, while **LoanRequest** handles information related to its own completeness. |
-| Rejected alternative | Assigning the completeness check entirely to **LoanRequestController** was rejected because it would place business validation logic in the controller and mix interface handling with request-management responsibilities. |
-| Consequences | Request completeness rules are kept close to the information being checked, while the service coordinates the workflow. This supports NFR-02 by preventing incomplete requests from being assessed. However, the required information rules must be clearly defined and maintained. |
+| Candidate assignments | LoanRequest, LoanRequestService, LoanRequestController |
+| Selected assignment | **LoanRequest** determines whether its required information has been recorded using its `isCompleteForAssessment()` operation. It checks the information it maintains, such as borrower details, requested equipment and required dates. **LoanRequestService** coordinates this check and ensures that the appropriate request status is recorded. If information is missing, the request is assigned the `AwaitingInformation` status. |
+| GRASP principle | **Information Expert:** LoanRequest is responsible for checking its completeness because it holds the request information needed to perform this check. **High Cohesion:** LoanRequest handles information related to its own completeness, while LoanRequestService coordinates the request workflow and status changes. |
+| Rejected alternative | Assigning the completeness check entirely to LoanRequestController was rejected because it would place business validation logic in the controller. Assigning the entire check to LoanRequestService was also rejected because LoanRequest already holds the information needed to determine its completeness. |
+| Consequences | Request completeness rules are kept close to the information being checked, while the service coordinates the workflow. This supports NFR-02 by preventing incomplete requests from being assessed. However, the required information rules must be clearly defined and maintained in accordance with the agreed request policy. |
 
 ## 5. Object-Interaction Design
 ### 5.1 UC-01: Record Loan Request
