@@ -199,9 +199,7 @@ The main principles considered in this design are:
 | LoanRequestController | Receives request information and knows available request operations. | Handles request submissions and delegates operations. | LoanRequestService |
 |LoanRequestService | Knows request workflow and required information. | Coordinates request creation, validation and status changes. |LoanRequest, Borrower, LoanRequestRepository |
 | EquipmentService | Knows equipment availability-checking operations. | Coordinates availability and extension-conflict checks. | EquipmentRepository, EquipmentUnit, LoanRequestRepository |
-| CollectionService | Knows collection operations. | Records equipment collection. | CollectionRecord, LoanRequestRepository, EquipmentRepository |
-| ReturnInspectionService | Knows return-inspection operations. | Records return inspections and coordinates damage recording. | ReturnInspectionRecord, DamageRecord, EquipmentRepository |
-| ReportService | Knows the information required for operational and funder reports. | Generates reports using relevant system information. | Relevant repositories |
+
 ### 4.2 GRASP Decision Records
 
 ## Decision 1: Receiving and coordinating loan requests
@@ -217,20 +215,18 @@ The main principles considered in this design are:
 | Rejected alternative | Assigning the entire process to **LoanRequestController** was rejected because it would combine interface handling, validation and business logic in one class. |
 | Consequences | Separates interface communication from business logic and makes the request workflow easier to test and maintain. However, it introduces an additional service class and dependency between the controller and service. |
 
-## Decision 2: Checking equipment availability
+## Decision 2: Creating the loan request and equipment lines
 
-**Selected classes:** EquipmentService, EquipmentRepository, EquipmentUnit
+**Selected classes:** LoanRequestController, LoanRequestService, LoanRequest, RequestedEquipmentLine
 
 | Field | Content |
 |---|---|
-| Problem | The system must support checking whether the requested quantity of equipment is available for a specified loan period. It must also support checking whether an extension conflicts with later approved requests. |
-| Candidate assignments | EquipmentUnit, EquipmentType, EquipmentService, EquipmentRepository, LoanRequestService |
-| Selected assignment | EquipmentService coordinates availability checks. It retrieves equipment information through **EquipmentRepository** and uses the information maintained by **EquipmentUnit** to determine availability for the requested period. It also supports extension-conflict checks. |
-| GRASP principle | **Information Expert:** **EquipmentUnit** maintains its own condition and availability information. **EquipmentService** coordinates the wider operation using information from multiple units and requests. **Low Coupling:** Equipment availability logic is kept separate from request-interface handling. |
-| Rejected alternative | Assigning the entire availability-checking operation to **LoanRequestController** was rejected because it would mix interface handling with equipment-management logic. |
-| Consequences | Equipment-related logic is separated from request handling and can be reused for availability and extension checks. However, the service must consider overlapping approved requests, equipment condition, maintenance and inspection restrictions. |
-
-**Design consideration:** Checking availability does not automatically reserve equipment. UC-01 explicitly states that recording a request does not imply approval or reservation.
+| Problem | The system must create a new loan request containing borrower information, requested collection and return dates, and one or more requested equipment lines. Each equipment line must identify an equipment type and its requested quantity. |
+| Candidate assignments | LoanRequestController, LoanRequestService, LoanRequest, RequestedEquipmentLine |
+| Selected assignment | LoanRequestController receives the request information from Office Staff and delegates the operation to **LoanRequestService**. **LoanRequestService** coordinates the creation of the new **LoanRequest** and associates it with the relevant **Borrower**. **LoanRequest** creates and maintains its **RequestedEquipmentLine** objects because they form part of the request. Each **RequestedEquipmentLine** stores the requested equipment type and quantity. |
+| GRASP principle | **Controller:** **LoanRequestController** handles the system event of submitting a new loan request and delegates the operation. **Creator:** **LoanRequest** is responsible for creating its **RequestedEquipmentLine** objects because it contains and maintains them. **High Cohesion:** The service coordinates request creation, while the request maintains its own equipment lines. |
+| Rejected alternative | Assigning **LoanRequestController** the responsibility for creating and managing all equipment lines was rejected because it would mix interface handling with domain-object creation and request-management logic. |
+| Consequences | Request creation is separated from interface handling, and equipment lines are maintained by the loan request that contains them. This supports requests containing multiple equipment types and quantities. However, it introduces a relationship between **LoanRequest** and **RequestedEquipmentLine**, and the service must coordinate the creation and persistence of the complete request. |
 
 ## Decision 3: Storing and retrieving loan-request information
 
@@ -245,19 +241,18 @@ The main principles considered in this design are:
 | Rejected alternative | Allowing **LoanRequestService** to execute database queries directly was rejected because it would tightly couple business logic to the database technology. |
 | Consequences | Database access is separated from business logic, making the system easier to test and maintain. The database implementation could be changed without significantly modifying the service. However, additional repository interfaces and implementations are required. |
 
-## Decision 4: Recording equipment collection and return
+## Decision 4: Checking request completeness
 
-**Related requirements:** FR-04, FR-05, FR-10  
-**Selected classes:** CollectionService, ReturnInspectionService, CollectionRecord, ReturnInspectionRecord
+**Selected classes:** `LoanRequest`, `LoanRequestService`
 
 | Field | Content |
 |---|---|
-| Problem | The system must record which approved equipment was collected, who collected it, who recorded the return and the results of the return inspection. |
-| Candidate assignments | CollectionService, ReturnInspectionService, LoanRequest, CollectionRecord, ReturnInspectionRecord, EquipmentUnit |
-| Selected assignment | **CollectionService** coordinates collection and creates a **CollectionRecord** containing the collection date, actual collector and equipment issued. **ReturnInspectionService** coordinates the return process and creates a **ReturnInspectionRecord** containing the return date, quantity, missing components, damage, cleanliness, safety and maintenance findings. |
-| GRASP principle | **Controller:** The service classes coordinate their respective system operations. **Creator:** The services create records that they coordinate and that capture the results of those operations. |
-| Rejected alternative | Assigning collection and return operations directly to **LoanRequest** was rejected because these are separate operational processes involving equipment units, staff members and inspection information. |
-| Consequences | Collection and return responsibilities are separated, making the design easier to understand and maintain. It also provides a record of the people involved in each operation. However, it introduces additional service classes and relationships. |
+| Problem | The system must ensure that a loan request contains all information required by the agreed request policy before it can be assessed. If required information is missing, the request must be recorded as pending further information and must not proceed to assessment. |
+| Candidate assignments |LoanRequest, LoanRequestService, LoanRequestController |
+| Selected assignment | LoanRequest knows its recorded information and determines whether the required request details are present. LoanRequestService coordinates the completeness check and ensures that the appropriate request status is recorded. If information is missing, the request is assigned the pending further information status. |
+| GRASP principle | **Information Expert:** **LoanRequest** is responsible for checking its completeness because it holds the request information required for that check. **High Cohesion:** **LoanRequestService** coordinates the request workflow and status changes, while **LoanRequest** handles information related to its own completeness. |
+| Rejected alternative | Assigning the completeness check entirely to **LoanRequestController** was rejected because it would place business validation logic in the controller and mix interface handling with request-management responsibilities. |
+| Consequences | Request completeness rules are kept close to the information being checked, while the service coordinates the workflow. This supports NFR-02 by preventing incomplete requests from being assessed. However, the required information rules must be clearly defined and maintained. |
 
 ## 5. Object-Interaction Design
 ### 5.1 UC-01: Record Loan Request
