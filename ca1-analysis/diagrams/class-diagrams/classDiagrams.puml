@@ -1,217 +1,350 @@
 
+
 @startuml
+title CELS - Complete System Class Diagram
+
 top to bottom direction
 
 skinparam classAttributeIconSize 0
 skinparam packageStyle rectangle
+skinparam linetype ortho
 
+' =====================================================
+' 1. DOMAIN CLASSES
+' =====================================================
 
-class Borrower {
-  - borrowerId: int
-  - name: String
-  - contactDetails: String
-  - borrowerCategory: String
+package "Domain Model" {
+
+  class Borrower {
+    - borrowerId: int
+    - name: String
+    - contactDetails: String
+    - borrowerCategory: String [0..1]
+  }
+
+  class StaffMember {
+    - staffId: int
+    - name: String
+    - contactDetails: String
+    - role: String
+  }
+
+  class LoanRequest {
+    - requestId: int
+    - receivedDate: LocalDate
+    - collectionDate: LocalDate [0..1]
+    - returnDate: LocalDate [0..1]
+    - activityStartDate: LocalDate [0..1]
+    - activityEndDate: LocalDate [0..1]
+    - status: RequestStatus
+    - activityDescription: String [0..1]
+    - namedCollector: String [0..1]
+    - missingInformation: String [0..1]
+
+    + changeStatus(status: RequestStatus): void
+    + isCompleteForAssessment(): boolean
+    + addRequestedEquipment(equipmentType: EquipmentType, quantity: int): RequestedEquipmentLine
+  }
+
+  class RequestedEquipmentLine {
+    - lineId: int
+    - requestedQuantity: int
+
+    + getEquipmentType(): EquipmentType
+    + getRequestedQuantity(): int
+  }
+
+  class EquipmentType {
+    - equipmentTypeId: int
+    - name: String
+    - requiresSafetyInspection: boolean
+    - requiresHandlingInstructions: boolean
+    - requiresCoordinatorApproval: boolean
+  }
+
+  class EquipmentUnit {
+    - unitId: int
+    - condition: EquipmentCondition
+    - availabilityStatus: AvailabilityStatus
+    - fundingSource: String
+    - safetyInspectionExpiryDate: LocalDate
+
+    + isAvailable(): boolean
+    + updateCondition(condition: EquipmentCondition): void
+  }
+
+  class EquipmentComponent {
+    - componentId: int
+    - name: String
+    - condition: EquipmentCondition
+    - componentStatus: String
+  }
+
+  class CollectionRecord {
+    - collectionId: int
+    - collectionDate: LocalDate
+    - actualCollectorName: String
+  }
+
+  class ReturnInspectionRecord {
+    - inspectionId: int
+    - returnDate: LocalDate
+    - returnQuantity: int
+    - cleanlinessResult: String
+    - safetyResult: String
+    - maintenanceNeed: boolean
+  }
+
+  class DamageRecord {
+    - damageId: int
+    - identifiedDate: LocalDate
+    - issueDescription: String
+    - usableAfterDamage: boolean
+    - repairRequired: boolean
+  }
+
+  enum RequestStatus {
+    AwaitingAssessment
+    AwaitingInformation
+    Approved
+    Rejected
+    Collected
+    Withdrawn
+    Returned
+  }
+
+  enum AvailabilityStatus {
+    Available
+    Reserved
+    OnLoan
+    AwaitingInspection
+    UnderMaintenance
+  }
+
+  enum EquipmentCondition {
+    Good
+    Fair
+    Damaged
+  }
 }
 
-class StaffMember {
-  - staffId: int
-  - name: String
-  - contactDetails: String
-  - role: String
-}
-
-
-class LoanRequest {
-  - requestId: int
-  - receivedDate: LocalDate
-  - collectionDate: LocalDate
-  - returnDate: LocalDate
-  - activityStartDate: LocalDate
-  - activityEndDate: LocalDate
-  - status: RequestStatus
-  - activityDescription: String
-  - namedCollector: String
-  - missingInformation: String
-  + changeStatus(status: RequestStatus): void
-}
-
-class RequestedEquipmentLine {
-  - lineId: int
-  - requestedQuantity: int
-}
-
-class EquipmentType {
-  - equipmentTypeId: int
-  - name: String
-  - requiresSafetyInspection: boolean
-  - requiresHandlingInstructions: boolean
-  - requiresCoordinatorApproval: boolean
-}
-
-class EquipmentUnit {
-  - unitId: int
-  - condition: EquipmentCondition
-  - availabilityStatus: AvailabilityStatus
-  - fundingSource: String
-  - safetyInspectionExpiryDate: LocalDate
-  + isAvailable(): boolean
-  + updateCondition(condition: EquipmentCondition): void
-}
-
-class EquipmentComponent {
-  - componentId: int
-  - name: String
-  - condition: EquipmentCondition
-  - componentStatus: String
-}
-
-class CollectionRecord {
-  - collectionId: int
-  - collectionDate: LocalDate
-  - actualCollectorName: String
-}
-
-class ReturnInspectionRecord {
-  - inspectionId: int
-  - returnDate: LocalDate
-  - returnQuantity: int
-  - cleanlinessResult: String
-  - safetyResult: String
-  - maintenanceNeed: boolean
-}
-
-class DamageRecord {
-  - damageId: int
-  - identifiedDate: LocalDate
-  - issueDescription: String
-  - usableAfterDamage: boolean
-  - repairRequired: boolean
-}
-
-enum RequestStatus {
-  AwaitingAssessment
-  AwaitingInformation
-  Approved
-  Rejected
-  Collected
-  Withdrawn
-  Returned
-}
-
-enum AvailabilityStatus {
-  Available
-  Reserved
-  OnLoan
-  AwaitingInspection
-  UnderMaintenance
-}
-
-enum EquipmentCondition {
-  Good
-  Fair
-  Damaged
-}
-
+' =====================================================
+' 2. DOMAIN RELATIONSHIPS
+' =====================================================
 
 Borrower "1" -- "0..*" LoanRequest : makes
+
 StaffMember "0..*" -- "0..*" LoanRequest : manages
 
 LoanRequest "1" *-- "1..*" RequestedEquipmentLine : contains
+
 RequestedEquipmentLine "0..*" --> "1" EquipmentType : requests
 
 EquipmentType "1" -- "0..*" EquipmentUnit : categorises
+
 EquipmentUnit "1" *-- "0..*" EquipmentComponent : consists of
 
 LoanRequest "1" -- "0..1" CollectionRecord : fulfilled by
+
 StaffMember "1" -- "0..*" CollectionRecord : records
+
 CollectionRecord "0..*" -- "1..*" EquipmentUnit : issues
 
 CollectionRecord "1" -- "0..1" ReturnInspectionRecord : followed by
+
 StaffMember "1" -- "0..*" ReturnInspectionRecord : records
+
 ReturnInspectionRecord "0..*" -- "1..*" EquipmentUnit : inspects
 
 ReturnInspectionRecord "1" -- "0..*" DamageRecord : identifies
+
 DamageRecord "0..*" -- "1" EquipmentUnit : affects
 
+' =====================================================
+' 3. DATA TRANSFER AND RESULT CLASSES
+' =====================================================
 
-class LoanRequestController {
-  + createRequest(requestData: LoanRequestDTO): LoanRequest
-  + getRequest(requestId: int): LoanRequest
+package "Data Transfer Objects and Results" {
+
+  class LoanRequestDTO <<data>> {
+    - borrowerName: String [0..1]
+    - borrowerCategory: String [0..1]
+    - contactDetails: String [0..1]
+    - collectionDate: LocalDate [0..1]
+    - returnDate: LocalDate [0..1]
+  }
+
+  class RequestedEquipmentLineDTO <<data>> {
+    - equipmentType: EquipmentType
+    - quantity: int
+  }
+
+  class RecordingResult <<result>> {
+    - success: boolean
+    - request: LoanRequest [0..1]
+    - errorMessage: String [0..1]
+  }
 }
 
-class LoanRequestService {
-  + recordRequest(request: LoanRequest): LoanRequest
-  + approveRequest(requestId: int): void
-  + recordWithdrawal(requestId: int): void
-  + rejectRequest(requestId: int): void
+LoanRequestDTO "1" -- "0..*" RequestedEquipmentLineDTO : equipmentLines
+
+RequestedEquipmentLineDTO ..> EquipmentType : uses
+
+RecordingResult ..> LoanRequest : contains
+
+' =====================================================
+' 4. CONTROLLER AND SERVICE CLASSES
+' =====================================================
+
+package "Application Layer" {
+
+  class LoanRequestController {
+    + startLoanRequest(): void
+    + recordBorrower(name: String, borrowerCategory: String, contactDetails: String): void
+    + addRequestedEquipment(equipmentType: EquipmentType, quantity: int): void
+    + setRequestDates(collectionDate: LocalDate, returnDate: LocalDate): void
+    + saveLoanRequest(): RecordingResult
+    + getRequest(requestId: int): LoanRequest
+  }
+
+  class LoanRequestService {
+    - currentRequestData: LoanRequestDTO [0..1]
+
+    + startLoanRequest(): void
+    + recordBorrower(name: String, borrowerCategory: String, contactDetails: String): void
+    + addRequestedEquipment(equipmentType: EquipmentType, quantity: int): void
+    + setRequestDates(collectionDate: LocalDate, returnDate: LocalDate): void
+    + saveLoanRequest(): RecordingResult
+    - recordRequest(requestData: LoanRequestDTO): RecordingResult
+    + approveRequest(requestId: int): void
+    + recordWithdrawal(requestId: int): void
+    + rejectRequest(requestId: int): void
+  }
+
+  class EquipmentService {
+    + checkAvailability(typeId: int, collectionDate: LocalDate, returnDate: LocalDate): List<EquipmentUnit>
+    + getEquipmentDetails(unitId: int): EquipmentUnit
+  }
+
+  class CollectionService {
+    + recordCollection(requestId: int): CollectionRecord
+  }
+
+  class ReturnInspectionService {
+    + inspectReturn(collectionId: int): ReturnInspectionRecord
+    + recordDamage(unitId: int): DamageRecord
+  }
 }
 
-class EquipmentService {
-  + checkAvailability(typeId: int, collectionDate: LocalDate, returnDate: LocalDate): List<EquipmentUnit>
-  + getEquipmentDetails(unitId: int): EquipmentUnit
+' =====================================================
+' 5. REPOSITORY INTERFACES
+' =====================================================
+
+package "Repository Layer" {
+
+  interface LoanRequestRepository {
+    + findById(id: int): LoanRequest
+    + save(request: LoanRequest): void
+    + update(request: LoanRequest): void
+  }
+
+  interface BorrowerRepository {
+    + findById(id: int): Borrower
+    + findByDetails(name: String, borrowerCategory: String, contactDetails: String): Borrower
+    + save(borrower: Borrower): void
+  }
+
+  interface EquipmentRepository {
+    + findById(id: int): EquipmentUnit
+    + findAvailable(typeId: int, collectionDate: LocalDate, returnDate: LocalDate): List<EquipmentUnit>
+    + update(unit: EquipmentUnit): void
+  }
+
+  interface CollectionRepository {
+    + save(record: CollectionRecord): void
+  }
+
+  interface ReturnInspectionRepository {
+    + save(record: ReturnInspectionRecord): void
+    + saveDamage(record: DamageRecord): void
+  }
+
+  class BorrowerRepositoryImpl
+  class LoanRequestRepositoryImpl
+  class EquipmentRepositoryImpl
+  class CollectionRepositoryImpl
+  class ReturnInspectionRepositoryImpl
 }
 
-class CollectionService {
-  + recordCollection(requestId: int): CollectionRecord
-}
-
-class ReturnInspectionService {
-  + inspectReturn(collectionId: int): ReturnInspectionRecord
-  + recordDamage(unitId: int): DamageRecord
-}
-
-
-interface LoanRequestRepository {
-  + findById(id: int): LoanRequest
-  + save(request: LoanRequest): void
-  + update(request: LoanRequest): void
-}
-
-interface EquipmentRepository {
-  + findById(id: int): EquipmentUnit
-  + findAvailable(typeId: int, collectionDate: LocalDate, returnDate: LocalDate): List<EquipmentUnit>
-  + update(unit: EquipmentUnit): void
-}
-
-interface CollectionRepository {
-  + save(record: CollectionRecord): void
-}
-
-interface ReturnInspectionRepository {
-  + save(record: ReturnInspectionRecord): void
-  + saveDamage(record: DamageRecord): void
-}
-
-interface BorrowerRepository {
-  + findById(id: int): Borrower
-  + save(borrower: Borrower): void
-}
-
-class BorrowerRepositoryImpl
-class LoanRequestRepositoryImpl
-class EquipmentRepositoryImpl
-class CollectionRepositoryImpl
-class ReturnInspectionRepositoryImpl
-
+' =====================================================
+' 6. REPOSITORY IMPLEMENTATIONS
+' =====================================================
 
 BorrowerRepositoryImpl ..|> BorrowerRepository
+
 LoanRequestRepositoryImpl ..|> LoanRequestRepository
+
 EquipmentRepositoryImpl ..|> EquipmentRepository
+
 CollectionRepositoryImpl ..|> CollectionRepository
+
 ReturnInspectionRepositoryImpl ..|> ReturnInspectionRepository
 
-LoanRequestService ..> BorrowerRepository
-LoanRequestController ..> LoanRequestService
-LoanRequestService ..> LoanRequestRepository
-LoanRequestService ..> EquipmentRepository
+' =====================================================
+' 7. CONTROLLER AND SERVICE DEPENDENCIES
+' =====================================================
+
+LoanRequestController ..> LoanRequestService : delegates
+
+LoanRequestController ..> RecordingResult : returns
+
+LoanRequestService "1" -- "0..1" LoanRequestDTO : holds current data
+
+LoanRequestService ..> LoanRequest : creates and coordinates
+
+LoanRequestService ..> Borrower : identifies or creates
+
+LoanRequestService ..> EquipmentType : uses selected type
+
+LoanRequestService ..> RecordingResult : produces
+
+LoanRequest ..> RequestedEquipmentLine : creates through addRequestedEquipment
+
+' =====================================================
+' 8. SERVICE AND REPOSITORY DEPENDENCIES
+' =====================================================
+
+LoanRequestService ..> LoanRequestRepository : records requests
+
+LoanRequestService ..> BorrowerRepository : identifies borrowers
 
 EquipmentService ..> EquipmentRepository
 
 CollectionService ..> LoanRequestRepository
+
 CollectionService ..> EquipmentRepository
+
 CollectionService ..> CollectionRepository
 
 ReturnInspectionService ..> EquipmentRepository
+
 ReturnInspectionService ..> ReturnInspectionRepository
+
+' =====================================================
+' 9. REPOSITORY AND DOMAIN DEPENDENCIES
+' =====================================================
+
+LoanRequestRepository ..> LoanRequest
+
+BorrowerRepository ..> Borrower
+
+EquipmentRepository ..> EquipmentUnit
+
+CollectionRepository ..> CollectionRecord
+
+ReturnInspectionRepository ..> ReturnInspectionRecord
+
+ReturnInspectionRepository ..> DamageRecord
+
 
 @enduml
