@@ -204,7 +204,60 @@ The main principles considered in this design are:
 | ReportService | Knows the information required for operational and funder reports. | Generates reports using relevant system information. | Relevant repositories |
 ### 4.2 GRASP Decision Records
 
+## Decision 1: Receiving and coordinating loan requests
 
+**Selected classes:** LoanRequestController, LoanRequestService
+
+| Field | Content |
+|---|---|
+| Problem | A class must receive a new loan-request submission from Office Staff and coordinate the process of recording the request, including handling incomplete information. |
+| Candidate assignments | LoanRequestController, LoanRequestService, LoanRequest |
+| Selected assignment | **LoanRequestController** receives the request from the user interface and delegates the operation to **LoanRequestService**. **LoanRequestService** coordinates request creation, checks required information and ensures the appropriate request status is recorded. |
+| GRASP principle | **Controller:** The controller handles the system event and delegates business operations. **High Cohesion:** The controller remains focused on receiving requests, while the service handles the request workflow. |
+| Rejected alternative | Assigning the entire process to **LoanRequestController** was rejected because it would combine interface handling, validation and business logic in one class. |
+| Consequences | Separates interface communication from business logic and makes the request workflow easier to test and maintain. However, it introduces an additional service class and dependency between the controller and service. |
+
+## Decision 2: Checking equipment availability
+
+**Selected classes:** EquipmentService, EquipmentRepository, EquipmentUnit
+
+| Field | Content |
+|---|---|
+| Problem | The system must support checking whether the requested quantity of equipment is available for a specified loan period. It must also support checking whether an extension conflicts with later approved requests. |
+| Candidate assignments | EquipmentUnit, EquipmentType, EquipmentService, EquipmentRepository, LoanRequestService |
+| Selected assignment | EquipmentService coordinates availability checks. It retrieves equipment information through **EquipmentRepository** and uses the information maintained by **EquipmentUnit** to determine availability for the requested period. It also supports extension-conflict checks. |
+| GRASP principle | **Information Expert:** **EquipmentUnit** maintains its own condition and availability information. **EquipmentService** coordinates the wider operation using information from multiple units and requests. **Low Coupling:** Equipment availability logic is kept separate from request-interface handling. |
+| Rejected alternative | Assigning the entire availability-checking operation to **LoanRequestController** was rejected because it would mix interface handling with equipment-management logic. |
+| Consequences | Equipment-related logic is separated from request handling and can be reused for availability and extension checks. However, the service must consider overlapping approved requests, equipment condition, maintenance and inspection restrictions. |
+
+**Design consideration:** Checking availability does not automatically reserve equipment. UC-01 explicitly states that recording a request does not imply approval or reservation.
+
+## Decision 3: Storing and retrieving loan-request information
+
+**Selected classes:** LoanRequestRepository, LoanRequestRepositoryImpl, LoanRequestService
+
+| Field | Content |
+|---|---|
+| Problem | The system needs to save and retrieve loan requests and update their information, including decisions and changes to requested quantities or dates. |
+| Candidate assignments | LoanRequest, LoanRequestService,LoanRequestRepository, LoanRequestRepositoryImpl |
+| Selected assignment | LoanRequestRepository defines the persistence operations, while **LoanRequestRepositoryImpl** performs the actual database operations. LoanRequestService uses the repository to save, retrieve and update loan requests. |
+| GRASP principle | **Indirection:** The repository provides an intermediate layer between business logic and the database. **Low Coupling:** The service does not depend directly on database implementation details. |
+| Rejected alternative | Allowing **LoanRequestService** to execute database queries directly was rejected because it would tightly couple business logic to the database technology. |
+| Consequences | Database access is separated from business logic, making the system easier to test and maintain. The database implementation could be changed without significantly modifying the service. However, additional repository interfaces and implementations are required. |
+
+## Decision 4: Recording equipment collection and return
+
+**Related requirements:** FR-04, FR-05, FR-10  
+**Selected classes:** CollectionService, ReturnInspectionService, CollectionRecord, ReturnInspectionRecord
+
+| Field | Content |
+|---|---|
+| Problem | The system must record which approved equipment was collected, who collected it, who recorded the return and the results of the return inspection. |
+| Candidate assignments | CollectionService, ReturnInspectionService, LoanRequest, CollectionRecord, ReturnInspectionRecord, EquipmentUnit |
+| Selected assignment | **CollectionService** coordinates collection and creates a **CollectionRecord** containing the collection date, actual collector and equipment issued. **ReturnInspectionService** coordinates the return process and creates a **ReturnInspectionRecord** containing the return date, quantity, missing components, damage, cleanliness, safety and maintenance findings. |
+| GRASP principle | **Controller:** The service classes coordinate their respective system operations. **Creator:** The services create records that they coordinate and that capture the results of those operations. |
+| Rejected alternative | Assigning collection and return operations directly to **LoanRequest** was rejected because these are separate operational processes involving equipment units, staff members and inspection information. |
+| Consequences | Collection and return responsibilities are separated, making the design easier to understand and maintain. It also provides a record of the people involved in each operation. However, it introduces additional service classes and relationships. |
 
 ## 5. Object-Interaction Design
 ### 5.1 UC-01: Record Loan Request
