@@ -1,0 +1,38 @@
+@startuml
+title Package / Layer View: UC-01 Record Loan Request
+skinparam packageStyle rectangle
+hide empty members
+top to bottom direction
+
+package "Application Layer" as App {
+  class LoanRequestController
+  class LoanRequestService
+}
+
+package "Data Transfer Objects and Results" as DTO {
+  class LoanRequestDTO
+  class RequestedEquipmentLineDTO
+  class RecordingResult
+}
+
+package "Domain Model" as Domain {
+  class LoanRequest
+  class RequestedEquipmentLine
+  class Borrower
+  class EquipmentType
+  enum RequestStatus
+}
+
+package "Repository Layer" as Repo {
+  interface LoanRequestRepository
+  interface BorrowerRepository
+  class LoanRequestRepositoryImpl
+  class BorrowerRepositoryImpl
+}
+
+App ..> DTO : holds context, returns result
+App ..> Domain : creates and coordinates
+App ..> Repo : uses interfaces only
+DTO ..> Domain
+Repo ..> Domain
+@enduml
