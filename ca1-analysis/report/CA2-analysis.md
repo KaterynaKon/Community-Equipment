@@ -21,9 +21,14 @@ The lecturer approved the Community Equipment Loan Service scenario
 for CA2. No scenario-specific expansion was provided.
 
 ### 1.3 Reconciliation and Agreed Baseline Links
+The following analysis artefacts form the agreed starting point
+for the CA2 design:
+The agreed analysis baseline is documented in the
+[CA1 Analysis Dossier](https://github.com/KaterynaKon/Community-Equipment/blob/main/ca1-analysis/report/CA1-analysis.md ).
 The multiplicity at the LoanRequest end of the StaffMember–LoanRequest
 association was changed from 1..* to 0..*, allowing a staff member
 to have no managed requests.
+
 
 ## 2. Product Goal, Backlog and Selected Design Scope
 
@@ -160,6 +165,7 @@ Cross references: US-01; UC-01; SC-01; SC-02; SC-04; SSD UC-01; FR-01; NFR-02
   borrower name and contact details, and at least one equipment line.
   This minimum is distinct from the information required for assessment
   (collection date and return date).
+  Group design assumption: these minimum-information rules are not explicitly specified in the scenario and require stakeholder confirmation.
 
 **Postconditions — successful recording:**
 - A LoanRequest was created.
@@ -250,8 +256,8 @@ The main principles considered in this design are:
 | Candidate assignments | LoanRequestController, LoanRequestService, LoanRequestDTO, LoanRequest |
 | Selected assignment | Until saving, **LoanRequestService** keeps the supplied information in a **LoanRequestDTO** with **RequestedEquipmentLineDTO** items. On saveLoanRequest(), the service creates the **LoanRequest** from the DTO data, and the LoanRequest creates one **RequestedEquipmentLine** for each collected line through `addRequestedEquipment(equipmentType, quantity)`. |
 | GRASP principle | **Pure Fabrication:** LoanRequestDTO is a technical class that holds unsaved information, which does not belong to any domain object. **Creator:** LoanRequestService creates the LoanRequest because it holds the initialising data; LoanRequest creates its RequestedEquipmentLines because it contains them. **High Cohesion:** the service coordinates, while LoanRequest manages its own lines. |
-| Rejected alternative | Creating a LoanRequest at startLoanRequest() and filling it step by step was rejected because OC-UC01-01 states that no LoanRequest exists before saving, and an abandoned or failed recording (E1) would leave a partial request. Letting the controller or service create RequestedEquipmentLines directly was rejected because LoanRequest contains and maintains them. |
-| Consequences | No partial request can exist, and equipment lines are maintained by the request that contains them. However, LoanRequestDTO repeats some fields of LoanRequest, and both must be kept consistent. |
+| Rejected alternative | Creating a LoanRequest at startLoanRequest() and filling it step by step was rejected in favour of a LoanRequestDTO to separate incomplete data capture from domain-object creation. Letting the controller or service create RequestedEquipmentLines directly was rejected because LoanRequest contains and maintains them. |
+| Consequences | Captured information is held in the DTO until saving, and equipment lines are maintained by LoanRequest. Atomic saving (Decision 3) ensures that no partially saved data remains if saving fails. However, LoanRequestDTO repeats some fields of LoanRequest,and both must be kept consistent. |
 
 #### Decision 3: Saving a new loan request
 
@@ -325,6 +331,7 @@ Dependency rules:
 - The Domain Model depends on no other package, so request rules do not depend on storage or the user interface.
 - LoanRequestService depends only on the repository interfaces, not on the Impl classes (Decision 3).
 - The user interface is not modelled; LoanRequestController is the entry point for the system events shown in the SSD.
+- Data Transfer Objects and Results depends on Domain Model because RequestedEquipmentLineDTO references EquipmentType and RecordingResult references LoanRequest.
 
 ### 6.3 Interfaces, Result Types and Error Conventions
 
@@ -349,8 +356,8 @@ startLoanRequest(), recordBorrower(), addRequestedEquipment() and setRequestDate
 #### Error conventions
 
 1. Missing assessment information is not an error. The request is saved with AwaitingInformation status and success = true (A2, NFR-02).
-2. A technical failure during saving is reported as success = false. The service never reports success unless the save completed.
-3. The LoanRequest, its lines and a new Borrower are saved as one unit: if saving fails, nothing is kept (OC-UC01-05, E1).
+2. The repository signals a storage failure by throwing an exception. LoanRequestService catches it and returns RecordingResult with success = false, no saved request and an error message.
+3. The repository implementation must save the LoanRequest, its lines and any new Borrower atomically: either all are saved or none are saved. If any part fails, all storage changes from this save operation must be rolled back (OC-UC01-05, E1).
 4. The minimum for saving (borrower name and contact details, and at least one equipment line) is a precondition of saveLoanRequest(). The user interface does not offer saving until this minimum has been recorded.
 5. "Available for assessment" in the use case and Gherkin corresponds to the AwaitingAssessment status; "pending further information" corresponds to AwaitingInformation.
 
