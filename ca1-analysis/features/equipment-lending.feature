@@ -13,17 +13,6 @@ Feature: Recording loan requests
     Then the service records the request
     And the request is available for assessment
 
-
-  Rule: A request cannot be assessed untill required information is recorded
-
-  # SC-02 - Related to FR-01 and NFR-02
-  Scenario: Record a request with missing required information
-    Given Office Staff has received a request for 10 chairs
-    And the request does not include a return date
-    When Office Staff records the loan request
-    Then the service records the request as pending further information
-    And the request cannot be assessed until the required information is recorded
-
   # SC-04 - Related to FR-01
   Scenario: Loan request cannot be saved
     Given Office Staff has received a request from Local Sports Club
@@ -33,7 +22,18 @@ Feature: Recording loan requests
     But the service is unable to save the request
     When Office Staff records the loan request
     Then no loan request is recorded
+    And Office Staff is told that the request was not saved
     And Office Staff follows the fallback process
+
+  Rule: A request cannot be assessed until required information is recorded
+
+  # SC-02 - Related to FR-01 and NFR-02
+  Scenario: Record a request with missing required information
+    Given Office Staff has received a request from Local Sports Club for 10 chairs
+    And the request does not include a return date
+    When Office Staff records the loan request
+    Then the service records the request as pending further information
+    And the request cannot be assessed until the required information is recorded
 
 Feature: Restricted volunteer access
     In order to protect borrower privacy
@@ -42,12 +42,10 @@ Feature: Restricted volunteer access
 
     # SC-03 - Related to NFR-01
     Scenario: Volunteer records an equipment return with limited access
-        Given a Volunteer is authorised to record equipment retrurns
+        Given a Volunteer is authorised to record equipment returns
         And an issued loan has deposit information
         And the loan contains borrower personal information
         When the Volunteer opens the return record
         Then the Volunteer can record the return information
         And the Volunteer cannot view deposit information
         And the Volunteer cannot view personal data not required to record the return
-
-
