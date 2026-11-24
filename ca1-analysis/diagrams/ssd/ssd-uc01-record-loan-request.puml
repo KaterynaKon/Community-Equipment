@@ -25,6 +25,6 @@ alt save succeeds and required information is complete (Success Flow)
 else save succeeds and required information is missing (A2, NFR-02)
   System --> Staff : request recorded as pending further information
 else request cannot be saved (E1)
-  note over System : save did not happen,\nno loan request recorded
+  System --> Staff : request not saved, no loan request recorded
 end
 @enduml
