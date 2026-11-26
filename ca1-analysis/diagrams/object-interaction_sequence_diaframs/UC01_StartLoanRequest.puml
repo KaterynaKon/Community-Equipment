@@ -1,0 +1,25 @@
+@startuml
+title SD-UC01-01: startLoanRequest()  
+hide footbox
+autonumber
+
+actor "Office Staff" as Staff
+participant ":LoanRequestController" as Ctrl
+participant ":LoanRequestService" as Svc
+
+Staff -> Ctrl : startLoanRequest()
+activate Ctrl
+Ctrl -> Svc : startLoanRequest()
+activate Svc
+
+create participant "currentRequestData\n:LoanRequestDTO" as DTO
+Svc -> DTO : <<create>>
+note right of DTO
+  X
+end note
+
+Svc --> Ctrl
+deactivate Svc
+Ctrl --> Staff
+deactivate Ctrl
+@enduml
