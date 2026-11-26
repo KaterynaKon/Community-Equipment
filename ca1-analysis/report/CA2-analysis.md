@@ -88,6 +88,7 @@ https://github.com/users/KaterynaKon/projects/2
 | Success Flow | 1. Office Staff starts recording a new loan request.<br>2. Office Staff records the borrower information.<br>3. Office Staff records the requested equipment, quantity, collection date and return date.<br>4. Office Staff saves the request.<br>5. The service records the request and makes it available for assessment. |
 | Alternative Flows | A1. The borrower is new: Office Staff records the available borrower information as part of the request.<br>A2. Required request information is missing: the request is recorded as pending further information and cannot be assessed until the missing information is recorded. |
 | Exceptions | E1. The service cannot save the request, for example because internet access is unavailable. No loan request is recorded, and staff follow an agreed fallback procedure. |
+| Minimal Guarantee | Whatever happens, no partial loan request, equipment line or new borrower is recorded, and no equipment is reserved. If the request cannot be saved, Office Staff are told that it was not saved. |
 | Postconditions | - After successful recording, a complete request is available for assessment.<br>- An incomplete request is recorded as pending further information and is not available for assessment.<br>- No approval or equipment reservation is assumed at this stage. |
 | Related Requirements / Rules | FR-01; NFR-02 |
 
