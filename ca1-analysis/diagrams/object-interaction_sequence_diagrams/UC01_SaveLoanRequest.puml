@@ -1,0 +1,87 @@
+@startuml
+title SD05-UC01: saveLoanRequest
+hide footbox
+autonumber
+
+actor "Office Staff" as Staff
+participant ":LoanRequestController" as Ctrl
+participant ":LoanRequestService" as Svc
+participant "currentRequestData\n:LoanRequestDTO" as DTO
+participant ":BorrowerRepository" as BRepo <<interface>>
+participant ":LoanRequestRepository" as LRepo <<interface>>
+
+note over Svc, DTO
+  Precondition: borrower name, contact details and
+  at least one equipment line are in currentRequestData.
+  The service reads the held values from the DTO.
+end note
+
+Staff -> Ctrl : saveLoanRequest()
+activate Ctrl
+Ctrl -> Svc : result = saveLoanRequest()
+activate Svc
+
+== Identify or create the borrower (Decision 5) ==
+Svc -> BRepo : borrower = findByDetails(name, borrowerCategory, contactDetails)
+activate BRepo
+BRepo --> Svc : borrower [0..1]
+deactivate BRepo
+
+opt borrower not found (A1: new borrower)
+  create participant "borrower\n:Borrower" as B
+  Svc -> B : <<create>>(name, borrowerCategory, contactDetails)
+  note right of B : Not saved separately;\nsaved together with the request.
+end
+
+== Create the request and its lines (Decision 2: Creator) ==
+create participant "request\n:LoanRequest" as LR
+Svc -> LR : <<create>>(borrower, collectionDate, returnDate)
+
+loop for each line : RequestedEquipmentLineDTO in currentRequestData
+  Svc -> LR : addRequestedEquipment(line.equipmentType, line.quantity)
+  activate LR
+  create participant ":RequestedEquipmentLine" as Line
+  LR -> Line : <<create>>(equipmentType, quantity)
+  LR --> Svc : RequestedEquipmentLine
+  deactivate LR
+end
+
+== Set status (Decision 4: Information Expert) ==
+Svc -> LR : markRecorded()
+activate LR
+LR -> LR : complete = isCompleteForAssessment()
+alt complete (collection and return dates set) - SC-01
+  LR -> LR : status = AwaitingAssessment
+else date missing (A2, NFR-02) - SC-02
+  LR -> LR : status = AwaitingInformation
+end
+deactivate LR
+
+== Save as one unit (Decision 3: Indirection, Low Coupling) ==
+Svc -> LRepo : save(request)
+activate LRepo
+
+alt save succeeds
+  LRepo --> Svc
+else save fails (E1) - SC-04
+  LRepo --> Svc : save failure (errorMessage)
+  note right of Svc
+    Saved as one unit, so nothing is recorded:
+    no LoanRequest, RequestedEquipmentLine
+    or new Borrower. Success is never reported.
+  end note
+end
+deactivate LRepo
+
+create participant "result\n:RecordingResult" as RR
+Svc -> RR : <<create>>(success, request [0..1], errorMessage [0..1])
+
+Svc --> Ctrl : result
+deactivate Svc
+Ctrl --> Staff : result
+deactivate Ctrl
+
+note over Staff, Ctrl
+  No approval and no equipment reservation at this stage.
+end note
+@enduml
