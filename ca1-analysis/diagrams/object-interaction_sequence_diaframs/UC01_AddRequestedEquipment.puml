@@ -1,0 +1,38 @@
+@startuml
+title SD03-UC01: addRequestedEquipment
+hide footbox
+autonumber
+
+actor "Office Staff" as Staff
+participant ":LoanRequestController" as Ctrl
+participant ":LoanRequestService" as Svc
+participant "currentRequestData\n:LoanRequestDTO" as DTO
+
+note over Staff, DTO
+  Called once for each requested equipment type (loop in SSD UC-01).
+  Precondition: equipmentType is an existing EquipmentType.
+end note
+
+Staff -> Ctrl : addRequestedEquipment(equipmentType, quantity)
+activate Ctrl
+Ctrl -> Svc : addRequestedEquipment(equipmentType, quantity)
+activate Svc
+
+create participant "line\n:RequestedEquipmentLineDTO" as LineDTO
+Svc -> LineDTO : <<create>>(equipmentType, quantity)
+Svc -> DTO : addLine(line)
+activate DTO
+deactivate DTO
+
+note right of DTO
+  Previous lines are kept.
+  No EquipmentUnit is allocated or reserved.
+end note
+note right of DTO
+X
+end note
+Svc --> Ctrl
+deactivate Svc
+Ctrl --> Staff
+deactivate Ctrl
+@enduml

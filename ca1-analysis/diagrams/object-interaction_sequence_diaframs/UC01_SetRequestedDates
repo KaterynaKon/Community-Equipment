@@ -1,0 +1,31 @@
+@startuml
+title SD04-UC01: setRequestDates
+hide footbox
+autonumber
+
+actor "Office Staff" as Staff
+participant ":LoanRequestController" as Ctrl
+participant ":LoanRequestService" as Svc
+participant "currentRequestData\n:LoanRequestDTO" as DTO
+
+Staff -> Ctrl : setRequestDates(collectionDate, returnDate)
+activate Ctrl
+Ctrl -> Svc : setRequestDates(collectionDate, returnDate)
+activate Svc
+Svc -> DTO : setDates(collectionDate, returnDate)
+activate DTO
+deactivate DTO
+
+note right of DTO
+  Either date may be empty [0..1].
+  An unknown date stays unset; no date is invented (OC-UC01-04).
+end note
+note right of DTO
+X
+end note
+
+Svc --> Ctrl
+deactivate Svc
+Ctrl --> Staff
+deactivate Ctrl
+@enduml

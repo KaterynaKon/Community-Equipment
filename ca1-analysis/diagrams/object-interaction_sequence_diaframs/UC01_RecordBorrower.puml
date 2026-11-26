@@ -1,0 +1,30 @@
+@startuml
+title SD02-UC01: recordBorrower
+hide footbox
+autonumber
+
+actor "Office Staff" as Staff
+participant ":LoanRequestController" as Ctrl
+participant ":LoanRequestService" as Svc
+participant "currentRequestData\n:LoanRequestDTO" as DTO
+
+Staff -> Ctrl : recordBorrower(name, borrowerCategory, contactDetails)
+activate Ctrl
+Ctrl -> Svc : recordBorrower(name, borrowerCategory, contactDetails)
+activate Svc
+Svc -> DTO : setBorrower(name, borrowerCategory, contactDetails)
+activate DTO
+deactivate DTO
+
+note right of DTO
+  Borrower details are only held in the context.
+  No Borrower is found or created here (OC-UC01-02).
+end note
+note right of DTO
+  X
+end note
+Svc --> Ctrl
+deactivate Svc
+Ctrl --> Staff
+deactivate Ctrl
+@enduml
