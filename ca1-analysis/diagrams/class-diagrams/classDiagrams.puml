@@ -43,11 +43,11 @@ package "Application Layer" {
 package "Data Transfer Objects and Results" {
 
   class LoanRequestDTO <<data>> {
-    - borrowerName: String [0..1]
-    - borrowerCategory: String [0..1]
-    - contactDetails: String [0..1]
-    - collectionDate: LocalDate [0..1]
-    - returnDate: LocalDate [0..1]
+    + borrowerName: String [0..1]
+    + borrowerCategory: String [0..1]
+    + contactDetails: String [0..1]
+    + collectionDate: LocalDate [0..1]
+    + returnDate: LocalDate [0..1]
     + LoanRequestDTO()
     + setBorrower(name: String, borrowerCategory: String [0..1], contactDetails: String): void
     + addLine(line: RequestedEquipmentLineDTO): void
@@ -55,8 +55,8 @@ package "Data Transfer Objects and Results" {
   }
 
   class RequestedEquipmentLineDTO <<data>> {
-    - equipmentType: EquipmentType
-    - quantity: int
+    + equipmentType: EquipmentType
+    + quantity: int
     + RequestedEquipmentLineDTO(equipmentType: EquipmentType, quantity: int)
   }
 
