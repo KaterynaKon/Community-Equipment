@@ -48,17 +48,23 @@ package "Data Transfer Objects and Results" {
     - contactDetails: String [0..1]
     - collectionDate: LocalDate [0..1]
     - returnDate: LocalDate [0..1]
+    + LoanRequestDTO()
+    + setBorrower(name: String, borrowerCategory: String [0..1], contactDetails: String): void
+    + addLine(line: RequestedEquipmentLineDTO): void
+    + setDates(collectionDate: LocalDate [0..1], returnDate: LocalDate [0..1]): void
   }
 
   class RequestedEquipmentLineDTO <<data>> {
     - equipmentType: EquipmentType
     - quantity: int
+    + RequestedEquipmentLineDTO(equipmentType: EquipmentType, quantity: int)
   }
 
   class RecordingResult <<result>> {
     - success: boolean
     - request: LoanRequest [0..1]
     - errorMessage: String [0..1]
+    + RecordingResult(success: boolean, request: LoanRequest [0..1], errorMessage: String [0..1])
   }
 }
 
@@ -93,6 +99,7 @@ package "Domain Model" {
   class RequestedEquipmentLine <<entity>> {
     - lineId: int
     - requestedQuantity: int
+    + RequestedEquipmentLine(equipmentType: EquipmentType, requestedQuantity: int)
   }
 
   class EquipmentType <<entity>> {
@@ -141,6 +148,8 @@ RequestedEquipmentLineDTO --> EquipmentType
 
 ' Controller and service dependencies
 LoanRequestController ..> LoanRequestService : delegates
+LoanRequestService ..> LoanRequestDTO : <<create>>
+LoanRequestService ..> RequestedEquipmentLineDTO : <<create>>
 LoanRequestService ..> LoanRequest : <<create>>
 LoanRequestService ..> Borrower : <<create>> for a new borrower
 LoanRequestService ..> RecordingResult : <<create>>
