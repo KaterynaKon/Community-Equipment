@@ -377,7 +377,39 @@ Board items are shown in brackets.
 
 ## 8. Design Evaluation
 ### 8.1 Cohesion, Coupling, Controllers and Object Validity
+
+**Controller.** LoanRequestController receives the five SSD system events and delegates them to LoanRequestService, so no business rule is placed in the controller (Decision 1). The weakness of this choice is that the controller repeats the service operations one to one and adds little behaviour of its own. We accepted this because it keeps the entry point for the user interface separate from the workflow, and the service can be tested without the interface. A single use-case controller, as in the Session 14 example, would remove the duplication but would mix event handling with coordination.
+
+**Cohesion.** Responsibilities are kept close to the information they use. LoanRequest creates its own RequestedEquipmentLines (Creator) and decides whether it is complete and which status it receives (Information Expert, Decision 4). Replacing the public changeStatus() with markRecorded() means the status cannot be set to an invalid value from outside. LoanRequestService has lower cohesion than the domain classes because it coordinates several steps of saveLoanRequest(): finding the borrower, creating the request, setting the status, saving and building the result. This is acceptable for a service that coordinates one use case, but it would need to be split if more use cases were added to the same class.
+
+**Coupling.** Dependencies point in one direction (6.2). The Domain Model depends on no other package, and LoanRequestService depends only on the repository interfaces, not on their implementations (Indirection, Decision 3). This means storage can change without changing the service. The DTO package depends on the Domain Model because RequestedEquipmentLineDTO refers to EquipmentType and RecordingResult refers to LoanRequest. This coupling is small and was accepted to avoid copying equipment-type data.
+
+**Object validity.** Before saving, information is held only in LoanRequestDTO, so no partially filled LoanRequest can exist (Decision 2). A LoanRequest is created only on saveLoanRequest(), always with a Borrower and at least one RequestedEquipmentLine, which matches the multiplicities in the DCD (1 and 1..*). A request without dates is still a valid object, but it receives the AwaitingInformation status and cannot be assessed (NFR-02). Saving is atomic, so after a failure (E1) no LoanRequest, line or new Borrower remains.
+
 ### 8.2 Assumptions, Risks, Rejected Alternatives and Limitations
+
+**Assumptions**
+- The minimum for saving is borrower name and contact details and at least one equipment line; the information required for assessment is the collection date and the return date. The scenario does not define these rules, so they need stakeholder confirmation.
+- The user interface does not allow saving until the minimum has been recorded, so this is treated as a precondition rather than a refusal outcome.
+- An existing borrower can be identified by name, category and contact details.
+
+**Risks**
+- LoanRequestService holds one current request (currentRequestData). If two staff members record requests at the same time through one service instance, their data could mix. A real implementation would need one context per staff session.
+- If borrower details are typed differently, findByDetails() may not find an existing borrower and a duplicate Borrower may be created (Decision 5).
+- LoanRequestDTO repeats fields of LoanRequest. If one changes and the other does not, data may be lost when saving.
+- Atomic saving depends on the repository implementation supporting rollback.
+
+**Rejected alternatives**
+- Creating a LoanRequest at startLoanRequest() and filling it step by step (Decision 2): rejected because a failed or abandoned recording would leave a partial request.
+- A public changeStatus(status) operation (Decision 4): rejected because it would allow any status, including invalid transitions.
+- Saving a new Borrower separately before the request (Decision 3): rejected because a failure between the two saves would leave a Borrower without a request.
+- Letting LoanRequest create the Borrower (Decision 5): rejected because a Borrower exists independently and can make many requests.
+
+**Limitations**
+- Only UC-01 was designed in detail. Assessment, collection and return are outside this design, so the status model contains only AwaitingAssessment and AwaitingInformation.
+- The design does not check equipment availability or quantity limits; these belong to assessment.
+- The user interface and the storage technology are not modelled.
+- The design is not implemented, so the conventions in 6.3 have not been tested.
 
 ## 9. Collaboration, Review and AI Disclosure
 ### 9.1 Iteration Goals and Definition of Done
