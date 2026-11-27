@@ -413,7 +413,22 @@ Board items are shown in brackets.
 - The design is not implemented, so the conventions in 6.3 have not been tested.
 
 ## 9. Collaboration, Review and AI Disclosure
+
 ### 9.1 Iteration Goals and Definition of Done
+
+**Iteration goal:** Complete and review the UC-01 design, from the use
+case and contracts to class responsibilities, object interactions
+and the design class diagram.
+
+**Definition of Done:** Work is complete when:
+
+- Editable files are committed to the repository, and diagrams can
+  be opened and read clearly.
+- Terminology, operation names and traceability links are consistent.
+- Each member's work is reviewed by at least one other team member.
+  Review comments are either addressed or recorded as open issues.
+- Repository evidence, board status and relevant AI-use records
+  are updated.
 ### 9.2 Peer Review and Final Retrospective
 ### 9.3 Individual Contribution Evidence
 ### 9.4 Group and Individual AI Declarations
