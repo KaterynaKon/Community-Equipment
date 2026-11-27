@@ -446,6 +446,22 @@ collaboration and tracking of design tasks.
   and review related artefacts together.
   
 ### 9.3 Individual Contribution Evidence
+
+| Issue | Task | Member(s) |
+|---|---|---|
+| #1 | Document scenario comparison and selection | All team members |
+| #2 | Reconciliation and expansion record | Kateryna Konieva |
+| #3 | Revised analysis baseline | Kateryna Konieva |
+| #4 | Prioritised implementation catalogue | Arsen Ibrahimov|
+| #5 | System sequence diagrams | Anastasiia Tkachenko|
+| #6 | Operation contracts | Kateryna Konieva|
+| #7 | CRC/responsibility model | Sofiia Fedchuk |
+| #8 | Design class diagram | Sofiia Fedchuk |
+| #9 | Object-interaction sequence diagrams | Arsen Ibrahimov |
+| #17 | Traceability matrix | Anastasiia Tkachenko |
+| #19 | Package/layer view for UC-01 (6.2) | Anastasiia Tkachenko |
+| #20 | Interfaces, result types and error conventions for UC-01 (6.3) | Anastasiia Tkachenko |
+| #22 | Design evaluation | Anastasiia Tkachenko |
 ### 9.4 Group and Individual AI Declarations
 ### 9.5 Evidence Links and Final Submission Tag
 
