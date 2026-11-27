@@ -530,7 +530,6 @@ collaboration and tracking of design tasks.
 | #19 | Package/layer view for UC-01 (6.2) | Anastasiia Tkachenko |
 | #20 | Interfaces, result types and error conventions for UC-01 (6.3) | Anastasiia Tkachenko |
 | #22 | Design evaluation | Anastasiia Tkachenko |
-### 9.4 Group and Individual AI Declarations
 
 ### 9.4 Group and Individual AI Declarations
 
@@ -546,16 +545,15 @@ collaboration and tracking of design tasks.
 
 #### Individual AI declarations
 
-##### Katerina
+##### Katerina Konieva
 
-[YOU: 4–6 sentences in your own words, answering:
-1. Which AI tool(s) did you use?
-2. What did you use it for? (e.g. understanding how to build design sequence diagrams from contracts, finding inconsistencies between the diagrams and the DCD, git help, English wording)
-3. One concrete example where you checked an AI suggestion and changed or rejected it, and why.
-4. How did you check the output? (contracts in 3.1, Decisions in 4.2, DCD, rendering in PlantUML)
-5. Confirm that you can explain your diagrams and made the final decisions.]
+I used Manus AI to understand operation contracts and help draft and refine the contracts for the five UC-01 system operations. I also used
+it to identify inconsistencies between the contracts and diagrams and improve English wording. I rejected a suggestion to make
+activityDescription a required UC-01 input because it was not included in our agreed SSD and would unnecessarily expand the capture requirements.
+I checked the suggested contract wording against the detailed use case, SSD, GRASP decisions and design class diagram. I made the final decisions
+about my own contribution and can explain the operation contracts and the changes I accepted.
 
-Log: [link to docs/ai-logs/ai-log-arsen.md]
+Log: ca1-analysis/report/ai-logs/ai-log-kateryna.md
 
 ##### Sofiia
 
