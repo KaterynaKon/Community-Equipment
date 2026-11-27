@@ -305,6 +305,38 @@ The main principles considered in this design are:
 ## 5. Object-Interaction Design
 ### 5.1 UC-01: Record Loan Request
 
+#### Consistency check: sequence messages, DCD operations and contracts
+
+Every message in SD01 to SD05 was checked against an operation on the receiving class in the DCD (6.1) and against the operation contract it realises.
+
+| Diagram | Sequence message | Receiving class | DCD operation | Realises |
+|---|---|---|---|---|
+| SD01 | startLoanRequest() | LoanRequestController, LoanRequestService | startLoanRequest(): void | SSD event; OC-UC01-01 |
+| SD01 | `<<create>>` | LoanRequestDTO | LoanRequestDTO() | OC-UC01-01: request-recording context established, no LoanRequest created |
+| SD02 | recordBorrower(name, borrowerCategory, contactDetails) | LoanRequestController, LoanRequestService | recordBorrower(...): void | SSD event; OC-UC01-02 |
+| SD02 | setBorrower(name, borrowerCategory, contactDetails) | LoanRequestDTO | setBorrower(...): void | OC-UC01-02: borrower information retained, no Borrower created |
+| SD03 | addRequestedEquipment(equipmentType, quantity) | LoanRequestController, LoanRequestService | addRequestedEquipment(...): void | SSD event; OC-UC01-03 |
+| SD03 | `<<create>>`(equipmentType, quantity) | RequestedEquipmentLineDTO | RequestedEquipmentLineDTO(...) | OC-UC01-03: equipment line added to the context |
+| SD03 | addLine(line) | LoanRequestDTO | addLine(line): void | OC-UC01-03: previous lines retained, nothing reserved |
+| SD04 | setRequestDates(collectionDate, returnDate) | LoanRequestController, LoanRequestService | setRequestDates(...): void | SSD event; OC-UC01-04 |
+| SD04 | setDates(collectionDate, returnDate) | LoanRequestDTO | setDates(...): void | OC-UC01-04: unknown date stays unset |
+| SD05 | saveLoanRequest() | LoanRequestController, LoanRequestService | saveLoanRequest(): RecordingResult | SSD event; OC-UC01-05 |
+| SD05 | findByDetails(name, borrowerCategory, contactDetails) | BorrowerRepository | findByDetails(...): Borrower [0..1] | Decision 5; A1 |
+| SD05 | `<<create>>`(name, borrowerCategory, contactDetails) | Borrower | Borrower(...) | OC-UC01-05: new Borrower created for a new borrower |
+| SD05 | `<<create>>`(borrower, collectionDate, returnDate) | LoanRequest | LoanRequest(...) | OC-UC01-05: LoanRequest created and associated with Borrower |
+| SD05 | addRequestedEquipment(equipmentType, quantity) | LoanRequest | addRequestedEquipment(...): RequestedEquipmentLine | Decision 2 (Creator); OC-UC01-05: one line per collected line |
+| SD05 | `<<create>>`(equipmentType, quantity) | RequestedEquipmentLine | RequestedEquipmentLine(...) | OC-UC01-05: quantity set, line associated with EquipmentType |
+| SD05 | markRecorded() | LoanRequest | markRecorded(): void | Decision 4; SC-01 / SC-02 status |
+| SD05 | isCompleteForAssessment() | LoanRequest | isCompleteForAssessment(): boolean | Decision 4 (Information Expert); NFR-02 |
+| SD05 | save(request) | LoanRequestRepository | save(request): void | Decision 3; OC-UC01-05 saved as one unit |
+| SD05 | `<<create>>`(success, request, errorMessage) | RecordingResult | RecordingResult(...) | 6.3 result convention; SC-01, SC-02, SC-04 |
+
+Result of the check:
+- Every message maps to an operation on the receiving class in the DCD; no DCD operation used by UC-01 is missing.
+- Every DCD operation in the Application, DTO, Domain and Repository packages is used by at least one sequence diagram.
+- The failure path in SD05 (storage failure during save) returns RecordingResult with success = false and keeps nothing, which matches the E1 no-change guarantee in OC-UC01-05.
+- Status values are shown as notes rather than messages, because they are internal assignments inside markRecorded(), not separate operations.
+
 
 ## 6. Integrated Design Model and Structure
 ### 6.1 Design Class Diagram
