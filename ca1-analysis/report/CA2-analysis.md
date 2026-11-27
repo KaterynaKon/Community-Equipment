@@ -538,9 +538,9 @@ collaboration and tracking of design tasks.
 | Field | Content |
 |---|---|
 | AI tools used | Claude, ChatGPT|
-| Affected artefacts | DCD consistency check, sequence diagram drafts, wording of section 8 |
+| Affected artefacts | DCD consistency check, sequence diagram drafts, wording of section 8, class diagram drafts, CRC cards formatting, decisions table formatting |
 | How AI output was checked | Every suggestion was compared with the use case, contracts (3.1), GRASP decisions and the DCD before it was accepted. Changes went through a pull request and peer review |
-| Significant accepted AI-supported changes | Adding setBorrower(), addLine(), setDates() and constructors to the DCD |
+| Significant accepted AI-supported changes | Adding setBorrower(), addLine(), setDates() and constructors to the DCD, adding LoanRequestController, LoanRequestDTO, LoanRequestService |
 | Interaction logs | [GROUP: links to each member's AI log, e.g. docs/ai-logs/ai-log-arsen.md] |
 
 #### Individual AI declarations
