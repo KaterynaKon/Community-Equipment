@@ -463,6 +463,13 @@ collaboration and tracking of design tasks.
 | #20 | Interfaces, result types and error conventions for UC-01 (6.3) | Anastasiia Tkachenko |
 | #22 | Design evaluation | Anastasiia Tkachenko |
 ### 9.4 Group and Individual AI Declarations
+
 ### 9.5 Evidence Links and Final Submission Tag
+- [Group repository](https://github.com/KaterynaKon/Community-Equipment )
+- [Project board](https://github.com/users/KaterynaKon/projects/2 )
+- [Commit history](https://github.com/KaterynaKon/Community-Equipment/commits/main/ )
+- **Final submission tag:** Pending.
 
 ## References
+1. CA1 Scenario 01: Community Equipment Loan Service — Riverside Community Partnership. Module-provided scenario.
+2. CA2: Collaborative Object-Oriented Design. Assignment brief.
