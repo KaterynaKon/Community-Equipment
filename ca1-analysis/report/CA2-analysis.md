@@ -305,6 +305,39 @@ The main principles considered in this design are:
 ## 5. Object-Interaction Design
 ### 5.1 UC-01: Record Loan Request
 
+One design sequence diagram was produced for each system operation in the
+SSD. Every message corresponds to an operation in the design class
+diagram, and every diagram realises the postconditions of its
+operation contract.
+
+#### SD-UC01-01: startLoanRequest()
+
+startLoanRequest(). Office Staff start a new request. The controller passes the call to the service, which creates an empty LoanRequestDTO to hold the data temporarily. No real LoanRequest is created yet.
+
+#### SD-UC01-02: recordBorrower()
+
+recordBorrower(). Office Staff enter the borrower's details. The service stores them in the DTO with setBorrower(). No Borrower object is created; the data is only held.
+OC-UC01-02 · Decisions 1, 2
+
+#### SD-UC01-03: addRequestedEquipment()
+
+addRequestedEquipment(). Office Staff add one equipment item, e.g. "chairs × 10". The service creates a RequestedEquipmentLineDTO and adds it to the DTO with addLine(line). This is repeated for each item. No equipment is reserved.
+
+#### SD-UC01-04: setRequestDates()
+
+setRequestDates(...). Office Staff enter the collection and return dates. The service stores them in the DTO with setDates(...). An unknown date stays empty; it is never invented.
+
+#### SD-UC01-05: saveLoanRequest(): RecordingResult
+
+saveLoanRequest(). Office Staff save the request, and the real objects are created from the DTO:
+
+The service looks for the borrower (findByDetails). If none is found, it creates a new Borrower.
+The service creates the LoanRequest (Decision 2).
+In a loop, the LoanRequest creates its own RequestedEquipmentLines.
+markRecorded(): the request checks itself (isCompleteForAssessment()) and sets its status to AwaitingAssessment (SC-01), or to AwaitingInformation if a date is missing.
+save(request) stores everything as one unit. If storage fails, the repository throws an exception and nothing is saved.
+The service creates a RecordingResult (success or failure) and returns it to Office Staff.
+
 #### Consistency check: sequence messages, DCD operations and contracts
 
 Every message in SD01 to SD05 was checked against an operation on the receiving class in the DCD (6.1) and against the operation contract it realises.
@@ -403,13 +436,13 @@ Board items are shown in brackets.
 
 | Requirement | User Story | Use Case | Gherkin | SSD operation (#5) | Operation Contract (#6) | CRC / GRASP (#7) | DCD element | Interaction 5.1 (#9) |
 |---|---|---|---|---|---|---|---|---|
-| FR-01 | US-01 | UC-01 | SC-01 | startLoanRequest() | OC-UC01-01 | LoanRequestController, LoanRequestService, LoanRequestDTO; Decisions 1, 2 | LoanRequestController.startLoanRequest(), LoanRequestService.startLoanRequest(), LoanRequestDTO | TBD |
-| FR-01 | US-01 | UC-01 (A1) | SC-01 | recordBorrower() | OC-UC01-02 | LoanRequestController, LoanRequestService, LoanRequestDTO; Decisions 1, 2 | recordBorrower(), LoanRequestDTO | TBD |
-| FR-01 | US-01 | UC-01 | SC-01 | addRequestedEquipment() | OC-UC01-03 | LoanRequestService, RequestedEquipmentLineDTO; Decision 2 | addRequestedEquipment(), RequestedEquipmentLineDTO | TBD |
-| FR-01 | US-01 | UC-01 | SC-01 | setRequestDates() | OC-UC01-04 | LoanRequestController, LoanRequestService, LoanRequestDTO; Decisions 1, 2 | setRequestDates(), LoanRequestDTO | TBD |
-| FR-01 | US-01 | UC-01 (A1) | SC-01 | saveLoanRequest() | OC-UC01-05 | LoanRequestService, Borrower, LoanRequest, RequestedEquipmentLine, repositories; Decisions 2, 3, 5 | saveLoanRequest(): RecordingResult, BorrowerRepository.findByDetails(), Borrower(...), LoanRequest(...), LoanRequest.addRequestedEquipment(), LoanRequestRepository.save() | TBD |
-| FR-01, NFR-02 | US-01 | UC-01 (A2) | SC-02 | saveLoanRequest() | OC-UC01-05 | LoanRequest; Decision 4 | LoanRequest.markRecorded(), LoanRequest.isCompleteForAssessment(), RequestStatus | TBD |
-| FR-01 | US-01 | UC-01 (E1) | SC-04 | saveLoanRequest() | OC-UC01-05 | LoanRequestRepository, RecordingResult; Decision 3 | LoanRequestRepository.save(), RecordingResult (success = false) | TBD |
+| FR-01 | US-01 | UC-01 | SC-01 | startLoanRequest() | OC-UC01-01 | LoanRequestController, LoanRequestService, LoanRequestDTO; Decisions 1, 2 | LoanRequestController.startLoanRequest(), LoanRequestService.startLoanRequest(), LoanRequestDTO | SD01 |
+| FR-01 | US-01 | UC-01 (A1) | SC-01 | recordBorrower() | OC-UC01-02 | LoanRequestController, LoanRequestService, LoanRequestDTO; Decisions 1, 2 | recordBorrower(), LoanRequestDTO | SD02 |
+| FR-01 | US-01 | UC-01 | SC-01 | addRequestedEquipment() | OC-UC01-03 | LoanRequestService, RequestedEquipmentLineDTO; Decision 2 | addRequestedEquipment(), RequestedEquipmentLineDTO | SD03 |
+| FR-01 | US-01 | UC-01 | SC-01 | setRequestDates() | OC-UC01-04 | LoanRequestController, LoanRequestService, LoanRequestDTO; Decisions 1, 2 | setRequestDates(), LoanRequestDTO | SD04 |
+| FR-01 | US-01 | UC-01 (A1) | SC-01 | saveLoanRequest() | OC-UC01-05 | LoanRequestService, Borrower, LoanRequest, RequestedEquipmentLine, repositories; Decisions 2, 3, 5 | saveLoanRequest(): RecordingResult, BorrowerRepository.findByDetails(), Borrower(...), LoanRequest(...), LoanRequest.addRequestedEquipment(), LoanRequestRepository.save() | SD05 |
+| FR-01, NFR-02 | US-01 | UC-01 (A2) | SC-02 | saveLoanRequest() | OC-UC01-05 | LoanRequest; Decision 4 | LoanRequest.markRecorded(), LoanRequest.isCompleteForAssessment(), RequestStatus | SD05 |
+| FR-01 | US-01 | UC-01 (E1) | SC-04 | saveLoanRequest() | OC-UC01-05 | LoanRequestRepository, RecordingResult; Decision 3 | LoanRequestRepository.save(), RecordingResult (success = false) | SD05 |
 
 ## 8. Design Evaluation
 ### 8.1 Cohesion, Coupling, Controllers and Object Validity
