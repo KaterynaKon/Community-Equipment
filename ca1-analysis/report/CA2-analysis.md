@@ -563,12 +563,9 @@ Log:ca1-analysis/report/ai-logs/ai-log-sofiia.md
 
 ##### Anastasiia
 
-[YOU: 4–6 sentences in your own words, answering:
-1. Which AI tool(s) did you use?
-2. What did you use it for? (e.g. understanding how to build design sequence diagrams from contracts, finding inconsistencies between the diagrams and the DCD, git help, English wording)
-3. One concrete example where you checked an AI suggestion and changed or rejected it, and why.
-4. How did you check the output? (contracts in 3.1, Decisions in 4.2, DCD, rendering in PlantUML)
-5. Confirm that you can explain your diagrams and made the final decisions.]
+I used Claude to understand the CA2 brief and the Session 14 walkthrough, to find inconsistencies between our artefacts, to suggest alternative responsibility assignments, to check diagrams for missing failure paths. For example, it found that the SSD E1 branch returned no result while the DCD returns RecordingResult, so I changed the SSD to return a failure message. I rejected a suggestion to reduce the SSD to one system operation because the group had already written five operation contracts. I checked every output against the detailed use case, Gherkin scenarios, operation contracts (3.1), GRASP decisions (4.2) and the DCD. I made the final decisions about my contribution and can explain the SSD, package view, conventions in 6.3, traceability matrix and design evaluation.
+
+Log: ca1-analysis/report/ai-logs/ai-log-anastasiia.md
 
 ##### Arsen Ibrahimov
 
