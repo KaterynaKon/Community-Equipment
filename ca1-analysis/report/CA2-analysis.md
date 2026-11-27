@@ -558,6 +558,7 @@ Log: ca1-analysis/report/ai-logs/ai-log-kateryna.md
 ##### Sofiia
 
 During this project, I used ChatGPT as a supporting tool to improve my class diagrams, explore possible improvements, troubleshoot Git problems, and explain unfamiliar technical concepts. For example, I asked it to review the relationships between the project scenario, UC-01 (Record Loan Request), and my class diagram, suggesting changes such as adding a LoanRequestController, BorrowerRepository, new request statuses, and modifying operations in LoanRequestService. However, I critically evaluated its suggestions and rejected some, such as organisationName: String in Borrower, because private borrowers do not necessarily belong to an organisation, and missingInformation: String because I considered it unnecessary. I also used PlantUML to verify that my diagrams were correctly structured. I made the final decisions about which suggestions to implement by checking them against the scenario and requirements, and I can independently explain my diagrams, their relationships and the reasoning behind my design decisions.
+Log:ca1-analysis/report/ai-logs/ai-log-sofiia.md
 
 ##### Anastasiia
 
