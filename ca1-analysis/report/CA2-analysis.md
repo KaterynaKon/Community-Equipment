@@ -429,7 +429,22 @@ and the design class diagram.
   Review comments are either addressed or recorded as open issues.
 - Repository evidence, board status and relevant AI-use records
   are updated.
+
 ### 9.2 Peer Review and Final Retrospective
+
+**Peer review:** Team members reviewed one another's work as the
+UC-01 design developed. The shared repository and board supported
+collaboration and tracking of design tasks.
+
+**Final retrospective:**
+
+- **Keep:** Sharing tasks and reviewing each other's work helped
+  the team develop the design collaboratively.
+- **Problem:** Diagrams created separately needed additional work
+  to keep operation names and responsibilities consistent.
+- **Improve:** Agree shared operation names before creating diagrams
+  and review related artefacts together.
+  
 ### 9.3 Individual Contribution Evidence
 ### 9.4 Group and Individual AI Declarations
 ### 9.5 Evidence Links and Final Submission Tag
