@@ -532,6 +532,59 @@ collaboration and tracking of design tasks.
 | #22 | Design evaluation | Anastasiia Tkachenko |
 ### 9.4 Group and Individual AI Declarations
 
+### 9.4 Group and Individual AI Declarations
+
+#### Group AI declaration
+
+| Field | Content |
+|---|---|
+| AI tools used | Claude, ChatGPT|
+| Affected artefacts | DCD consistency check, sequence diagram drafts, wording of section 8 |
+| How AI output was checked | Every suggestion was compared with the use case, contracts (3.1), GRASP decisions and the DCD before it was accepted. Changes went through a pull request and peer review |
+| Significant accepted AI-supported changes | Adding setBorrower(), addLine(), setDates() and constructors to the DCD |
+| Interaction logs | [GROUP: links to each member's AI log, e.g. docs/ai-logs/ai-log-arsen.md] |
+
+#### Individual AI declarations
+
+##### Katerina
+
+[YOU: 4–6 sentences in your own words, answering:
+1. Which AI tool(s) did you use?
+2. What did you use it for? (e.g. understanding how to build design sequence diagrams from contracts, finding inconsistencies between the diagrams and the DCD, git help, English wording)
+3. One concrete example where you checked an AI suggestion and changed or rejected it, and why.
+4. How did you check the output? (contracts in 3.1, Decisions in 4.2, DCD, rendering in PlantUML)
+5. Confirm that you can explain your diagrams and made the final decisions.]
+
+Log: [link to docs/ai-logs/ai-log-arsen.md]
+
+##### Sofiia
+
+[YOU: 4–6 sentences in your own words, answering:
+1. Which AI tool(s) did you use?
+2. What did you use it for? (e.g. understanding how to build design sequence diagrams from contracts, finding inconsistencies between the diagrams and the DCD, git help, English wording)
+3. One concrete example where you checked an AI suggestion and changed or rejected it, and why.
+4. How did you check the output? (contracts in 3.1, Decisions in 4.2, DCD, rendering in PlantUML)
+5. Confirm that you can explain your diagrams and made the final decisions.]
+
+##### Anastasiia
+
+[YOU: 4–6 sentences in your own words, answering:
+1. Which AI tool(s) did you use?
+2. What did you use it for? (e.g. understanding how to build design sequence diagrams from contracts, finding inconsistencies between the diagrams and the DCD, git help, English wording)
+3. One concrete example where you checked an AI suggestion and changed or rejected it, and why.
+4. How did you check the output? (contracts in 3.1, Decisions in 4.2, DCD, rendering in PlantUML)
+5. Confirm that you can explain your diagrams and made the final decisions.]
+
+##### Arsen Ibrahimov
+
+[YOU: 4–6 sentences in your own words, answering:
+1. Which AI tool(s) did you use?
+2. What did you use it for? (e.g. understanding how to build design sequence diagrams from contracts, finding inconsistencies between the diagrams and the DCD, git help, English wording)
+3. One concrete example where you checked an AI suggestion and changed or rejected it, and why.
+4. How did you check the output? (contracts in 3.1, Decisions in 4.2, DCD, rendering in PlantUML)
+5. Confirm that you can explain your diagrams and made the final decisions.]
+
+
 ### 9.5 Evidence Links and Final Submission Tag
 - [Group repository](https://github.com/KaterynaKon/Community-Equipment )
 - [Project board](https://github.com/users/KaterynaKon/projects/2 )
