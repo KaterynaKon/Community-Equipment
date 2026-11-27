@@ -11,10 +11,13 @@
 | Kerry Community Sports Facility Service | 3 | 5 | 5 | 4 | 4 | 5 | 4.3 |
 | Harbour Equipment and Berth Service | 4 | 5 | 4 | 4 | 4 | 4 | 4.2 |
 
+Each member presented the purpose, scope, actors, main use cases and domain concepts of their CA1 scenario. The group then scored each scenario from 1 to 5. The brief's four criteria were covered as follows: manageable scope (Scope), behavioural richness (Behavioural richness), object-oriented design potential (OO potential), and suitability for detailed use-case and interaction design (Sliceability, Testability and Comparability).
 
-Our team analysed each teammate's scenario and report and selected
-Community Equipment Loan Service based on the comparison of scope,
-behavioural richness, OO potential, sliceability, testability and comparability.
+The Community Equipment Loan Service received the highest average score (4.5). Its lending process has a clear lifecycle, from recording a request through assessment, collection and return inspection, so a single use case can be designed in detail while still fitting into the larger process. Requests can contain several equipment types and quantities, information can be missing when a request arrives, and saving can fail. This gives meaningful alternative and failure behaviour for SSDs, operation contracts and sequence diagrams. The domain also contains several related concepts with clear responsibilities, such as Borrower, LoanRequest, RequestedEquipmentLine and EquipmentType, which gave good material for CRC cards and GRASP decisions.
+
+The Kerry Community Sports Facility Service scored almost as high (4.3) and was equally strong in behavioural richness and OO potential, but its scope was scored lower (3), so it was judged harder to complete within the CA2 timeframe. The Harbour Equipment and Berth Service (4.2) was rich in behaviour, but it combined berth requests, provisional holds, equipment and vessel movements, which made a clean design slice harder to isolate. The Farm Machinery Cooperative Service (3.8) had a manageable scope and was easy to slice, but scored lower for behavioural richness and testability, so it offered fewer meaningful alternative paths to design.
+
+The group therefore selected the Community Equipment Loan Service as the best balance of manageable scope and design potential.
 
 ### 1.2 Lecturer Approval and Expansion
 The lecturer approved the Community Equipment Loan Service scenario
