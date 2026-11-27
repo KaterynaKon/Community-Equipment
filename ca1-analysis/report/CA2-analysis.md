@@ -434,15 +434,15 @@ startLoanRequest(), recordBorrower(), addRequestedEquipment() and setRequestDate
 
 Board items are shown in brackets.
 
-| Requirement | User Story | Use Case | Gherkin | SSD operation (#5) | Operation Contract (#6) | CRC / GRASP (#7) | DCD element | Interaction 5.1 (#9) |
+| Requirement | User Story | Use Case | Gherkin | SSD operation (#5) | Operation Contract (#6) | CRC / GRASP (#7) | DCD element (#8) | Interaction 5.1 (#9) |
 |---|---|---|---|---|---|---|---|---|
-| FR-01 | US-01 | UC-01 | SC-01 | startLoanRequest() | OC-UC01-01 | LoanRequestController, LoanRequestService, LoanRequestDTO; Decisions 1, 2 | LoanRequestController.startLoanRequest(), LoanRequestService.startLoanRequest(), LoanRequestDTO() | SD-UC01-01 |
-| FR-01 | US-01 | UC-01 (A1) | SC-01 | recordBorrower() | OC-UC01-02 | LoanRequestController, LoanRequestService, LoanRequestDTO; Decisions 1, 2 | recordBorrower(), LoanRequestDTO.setBorrower() | SD-UC01-02 |
-| FR-01 | US-01 | UC-01 | SC-01 | addRequestedEquipment() | OC-UC01-03 | LoanRequestService, RequestedEquipmentLineDTO; Decision 2 | addRequestedEquipment(), RequestedEquipmentLineDTO(...), LoanRequestDTO.addLine() | SD-UC01-03 |
-| FR-01 | US-01 | UC-01 | SC-01 | setRequestDates() | OC-UC01-04 | LoanRequestController, LoanRequestService, LoanRequestDTO; Decisions 1, 2 | setRequestDates(), LoanRequestDTO.setDates() | SD-UC01-04 |
-| FR-01 | US-01 | UC-01 (A1) | SC-01 | saveLoanRequest() | OC-UC01-05 | LoanRequestService, Borrower, LoanRequest, RequestedEquipmentLine, repositories; Decisions 2, 3, 5 | saveLoanRequest(): RecordingResult, BorrowerRepository.findByDetails(), Borrower(...), LoanRequest(...), LoanRequest.addRequestedEquipment(), RequestedEquipmentLine(...), LoanRequestRepository.save(), RecordingResult(...) | SD-UC01-05 |
-| FR-01, NFR-02 | US-01 | UC-01 (A2) | SC-02 | saveLoanRequest() | OC-UC01-05 | LoanRequest; Decision 4 | LoanRequest.markRecorded(), LoanRequest.isCompleteForAssessment(), RequestStatus | SD-UC01-05 (alt: status) |
-| FR-01 | US-01 | UC-01 (E1) | SC-04 | saveLoanRequest() | OC-UC01-05 | LoanRequestRepository, RecordingResult; Decision 3 | LoanRequestRepository.save(), RecordingResult (success = false) | SD-UC01-05 (alt: save failure) |
+| FR-01 | US-01 | UC-01 | SC-01 | startLoanRequest() | OC-UC01-01 | LoanRequestController, LoanRequestService, LoanRequestDTO; Decisions 1, 2 | LoanRequestController.startLoanRequest(), LoanRequestService.startLoanRequest(), LoanRequestDTO() | SD01: startLoanRequest() → `<<create>>` LoanRequestDTO |
+| FR-01 | US-01 | UC-01 (A1) | SC-01 | recordBorrower() | OC-UC01-02 | LoanRequestController, LoanRequestService, LoanRequestDTO; Decisions 1, 2 | recordBorrower(), LoanRequestDTO.setBorrower() | SD02: recordBorrower() → setBorrower() |
+| FR-01 | US-01 | UC-01 | SC-01 | addRequestedEquipment() | OC-UC01-03 | LoanRequestService, RequestedEquipmentLineDTO; Decision 2 | addRequestedEquipment(), RequestedEquipmentLineDTO(...), LoanRequestDTO.addLine() | SD03: addRequestedEquipment() → `<<create>>` RequestedEquipmentLineDTO → addLine() |
+| FR-01 | US-01 | UC-01 | SC-01 | setRequestDates() | OC-UC01-04 | LoanRequestController, LoanRequestService, LoanRequestDTO; Decisions 1, 2 | setRequestDates(), LoanRequestDTO.setDates() | SD04: setRequestDates() → setDates() |
+| FR-01 | US-01 | UC-01 (A1) | SC-01 | saveLoanRequest() | OC-UC01-05 | LoanRequestService, Borrower, LoanRequest, RequestedEquipmentLine, repositories; Decisions 2, 3, 5 | saveLoanRequest(): RecordingResult, BorrowerRepository.findByDetails(), Borrower(...), LoanRequest(...), LoanRequest.addRequestedEquipment(), RequestedEquipmentLine(...), LoanRequestRepository.save() | SD05: findByDetails() → opt `<<create>>` Borrower → `<<create>>` LoanRequest → loop addRequestedEquipment() → save() |
+| FR-01, NFR-02 | US-01 | UC-01 (A2) | SC-02 | saveLoanRequest() | OC-UC01-05 | LoanRequest; Decision 4 | LoanRequest.markRecorded(), LoanRequest.isCompleteForAssessment(), RequestStatus | SD05: markRecorded() → isCompleteForAssessment() → alt AwaitingAssessment / AwaitingInformation |
+| FR-01 | US-01 | UC-01 (E1) | SC-04 | saveLoanRequest() | OC-UC01-05 | LoanRequestRepository, RecordingResult; Decision 3 | LoanRequestRepository.save(), RecordingResult(...) | SD05: save() → alt storage failure (exception) → `<<create>>` RecordingResult(success = false) |
 
 ## 8. Design Evaluation
 ### 8.1 Cohesion, Coupling, Controllers and Object Validity
